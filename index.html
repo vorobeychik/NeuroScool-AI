@@ -29,6 +29,21 @@ label{display:block;color:#dceaff;font-size:14px;font-weight:650}.lesson{border-
 .progress{height:10px;background:#061a3b;border-radius:20px;overflow:hidden}.progress span{display:block;height:100%;background:linear-gradient(90deg,#63e3ed,#1685f8);width:0}
 footer{text-align:center;color:#8fa9d1;padding:22px;font-size:12px}
 @media(max-width:760px){.layout{grid-template-columns:1fr;padding:10px}nav{position:static;display:grid;grid-template-columns:repeat(3,1fr);gap:3px}nav button{text-align:center;padding:10px 4px;font-size:13px}header{padding:12px}.hero,.card{padding:17px}}
+
+.reading-wrap{display:grid;grid-template-columns:1fr;gap:14px}
+.reading-card{background:#102b60;border:1px solid #31528b;border-radius:18px;padding:18px;margin-bottom:14px}
+.reading-card h2,.reading-card h3{color:#f4f8ff}
+.reading-letters{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin-top:12px}
+.reading-letter{background:#1b4788;color:#fff;border:1px solid #4772ad;padding:12px 4px;font-size:21px;border-radius:12px}
+.reading-letter.done{background:#0a604c;border-color:#3ba985}
+.reading-letter.current{outline:2px solid #8beafa}
+.reading-option{display:block;width:100%;text-align:left;margin:8px 0;background:#1b4788;color:#fff;border:1px solid #4772ad}
+.reading-feedback{padding:12px;border-radius:12px;background:#0a3c4d;color:#b9f5ff;margin-top:10px}
+.reading-big{font-size:72px;font-weight:900;text-align:center;color:#8beafa;padding:10px}
+.reading-progress{height:9px;background:#061a3b;border-radius:20px;overflow:hidden;margin:9px 0}
+.reading-progress span{display:block;height:100%;background:linear-gradient(90deg,#63e3ed,#1685f8);width:0}
+@media(max-width:760px){.reading-letters{grid-template-columns:repeat(5,minmax(0,1fr))}}
+
 </style>
 </head>
 <body>
@@ -41,6 +56,7 @@ footer{text-align:center;color:#8fa9d1;padding:22px;font-size:12px}
 <button data-view="progress">↗ Прогресс</button>
 <button data-view="profile">◎ Профиль</button>
 <button data-view="assistant">✦ ИИ-помощник</button>
+<button data-view="reading">📚 Чтение · 1 класс</button>
 </nav>
 <main>
 <section class="view active" id="home">
@@ -77,6 +93,32 @@ footer{text-align:center;color:#8fa9d1;padding:22px;font-size:12px}
 <div class="hero"><button class="secondary" id="backSubjects">← К предметам</button><div class="eyebrow" id="lessonSubject"></div><h1 id="lessonTitle">Урок</h1><p id="lessonText"></p></div>
 <div class="card"><h2>Проверь себя</h2><p id="quizQuestion"></p><div id="quizOptions"></div><div id="quizFeedback" class="notice" hidden></div></div>
 </section>
+
+<section class="view" id="reading">
+ <div class="hero"><div class="eyebrow">Курс чтения · 1 класс</div><h1>Читаем по «Азбуке» Горецкого</h1>
+ <p>Сохраняем всю прежнюю NeuroSchool и добавляем отдельный последовательный курс: подготовка к буквам, буквы по порядку, упражнения и проверка.</p>
+ <div class="small">Прогресс курса чтения хранится отдельно в браузере на этом устройстве.</div></div>
+ <div class="reading-card">
+  <h2>Прогресс курса</h2><div id="rProgressText">0 уроков пройдено</div>
+  <div class="reading-progress"><span id="rProgressBar"></span></div>
+  <div class="grid">
+   <div class="card"><div class="small">Подготовительные темы</div><div class="stat" id="rPrepCount">0 / 8</div></div>
+   <div class="card"><div class="small">Буквы</div><div class="stat" id="rLetterCount">0 / 33</div></div>
+  </div>
+ </div>
+ <div class="reading-card">
+  <h2>Шаг 1. Подготовка к буквам</h2>
+  <p>Перед буквами учимся различать речь, предложения, слова, слоги, ударение и звуки.</p>
+  <div id="rPrepList" class="grid"></div>
+ </div>
+ <div class="reading-card">
+  <h2>Шаг 2. Изучаем буквы по порядку</h2>
+  <p>Нажми на букву, чтобы открыть отдельный урок. Последовательность соответствует порядку изучения букв в «Азбуке» Горецкого.</p>
+  <div id="rLetterGrid" class="reading-letters"></div>
+ </div>
+ <div id="rLesson" class="reading-card" hidden></div>
+</section>
+
 </main></div><footer>NeuroSchool AI · Учебный прототип 1.1 · Данные хранятся локально в браузере</footer>
 <script>
 (function(){
@@ -109,4 +151,90 @@ if(data.profile){document.getElementById('nickname').value=data.profile.nickname
 refreshStats();
 })();
 </script>
+
+<script>
+(function(){
+ const prep=[
+  ["Знакомимся с азбукой","Азбука помогает познакомиться с буквами и научиться читать. Букву мы видим и пишем, звук слышим и произносим.","Что мы видим и пишем?",["Звук","Букву","Музыку"],1,"Букву можно увидеть и написать."],
+  ["Речь и предложение","Мы общаемся с помощью речи. Предложение выражает законченную мысль.","Что является предложением?",["На столе","Кот спит.","Красивый"],1,"«Кот спит.» — законченная мысль."],
+  ["Слово и предложение","Предложение состоит из слов. Между словами при письме обычно ставят пробелы.","Сколько слов в «Мама мыла раму»?",["Два","Три","Четыре"],1,"Мама / мыла / раму — три слова."],
+  ["Слог","Слово можно разделить на слоги. В каждом слоге есть гласный звук.","Сколько слогов в слове «ма-ма»?",["Один","Два","Три"],1,"Ма-ма — два слога."],
+  ["Ударение","Один слог в слове произносится сильнее других. Это ударный слог.","В каком слове ударение на первом слоге?",["вода́","ма́ма","рука́"],1,"В слове ма́ма ударение на первом слоге."],
+  ["Звуки речи","Звуки окружают нас. Речевые звуки мы произносим, чтобы составлять слова.","Что относится к речевым звукам?",["[м]","Шум дождя","Звон чашки"],0,"[м] — речевой звук."],
+  ["Гласные и согласные","Гласные можно тянуть голосом. При произнесении согласных есть преграда.","Какой звук гласный?",["[с]","[а]","[м]"],1,"[а] — гласный звук."],
+  ["Слог-слияние","Согласный плавно соединяется с гласным: МА, НО, СУ. Читай слитно.","Как нужно прочитать слог?",["М-А с паузой","МА слитно","Только звук М"],1,"МА читается слитно."]
+ ];
+ const letters="А О И Ы У Н С К Т Л Р В Е П М З Б Д Я Г Ч Ь Ш Ж Ё Й Х Ю Ц Э Щ Ф Ъ".split(" ");
+ const info={
+ "А":["[а]","арбуз, аист","А, АМ, МА","А — гласный звук. Произнеси [а]."],
+ "О":["[о]","окно, оса","О, ОМ, МО","О — гласный звук. Губы округляются."],
+ "И":["[и]","игла, ирис","И, ИМ, МИ","И — гласный звук."],
+ "Ы":["[ы]","рыба, сыр","Ы, МЫ, СЫ","Ы — гласный звук."],
+ "У":["[у]","утка, ухо","У, УМ, МУ","У — гласный звук. Вытяни губы трубочкой."],
+ "Н":["[н]","нос, нора","НА, НО, НИ","Н — согласный звонкий звук."],
+ "С":["[с]","сок, сыр","СА, СО, СИ","С — согласный глухой звук."],
+ "К":["[к]","кот, кит","КА, КО, КИ","К — согласный глухой звук."],
+ "Т":["[т]","тигр, торт","ТА, ТО, ТИ","Т — согласный глухой звук."],
+ "Л":["[л]","лук, лампа","ЛА, ЛО, ЛИ","Л — согласный звонкий звук."],
+ "Р":["[р]","рак, рыба","РА, РО, РИ","Р — согласный звонкий звук."],
+ "В":["[в]","волк, вата","ВА, ВО, ВИ","В — согласный звонкий звук."],
+ "Е":["[й'э] / [э]","ель, енот","МЕ, ЛЕ, НЕ","В начале слова Е может обозначать два звука, после согласного смягчает его."],
+ "П":["[п]","папа, пар","ПА, ПО, ПИ","П — согласный глухой звук."],
+ "М":["[м]","мама, мак","МА, МО, МИ","М — согласный звонкий звук."],
+ "З":["[з]","зуб, зима","ЗА, ЗО, ЗИ","З — согласный звонкий звук."],
+ "Б":["[б]","бант, банка","БА, БО, БИ","Б — согласный звонкий звук."],
+ "Д":["[д]","дом, дым","ДА, ДО, ДИ","Д — согласный звонкий звук."],
+ "Я":["[й'а] / [а]","яма, яблоко","МЯ, ЛЯ, НЯ","В начале слова Я обозначает два звука, после согласного смягчает его."],
+ "Г":["[г]","гора, гуси","ГА, ГО, ГИ","Г — согласный звонкий звук."],
+ "Ч":["[ч']","чай, часы","ЧА, ЧУ, ЧИ","Ч — всегда мягкий согласный звук."],
+ "Ь":["звука не обозначает","конь, день","КОНЬ, ДЕНЬ","Мягкий знак сам звука не обозначает, может показывать мягкость согласного."],
+ "Ш":["[ш]","шар, шапка","ША, ШО, ШИ","Ш — всегда твёрдый согласный звук."],
+ "Ж":["[ж]","жук, жаба","ЖА, ЖУ, ЖИ","Ж — всегда твёрдый согласный звук."],
+ "Ё":["[й'о] / [о]","ёлка, ёж","ЛЁ, МЁ, НЁ","В начале слова Ё обозначает два звука, после согласного смягчает его."],
+ "Й":["[й']","йод, май","АЙ, МОЙ, РОЙ","Й — согласный звук, всегда мягкий."],
+ "Х":["[х]","хлеб, хомяк","ХА, ХО, ХИ","Х — согласный глухой звук."],
+ "Ю":["[й'у] / [у]","юла, юбка","ЛЮ, НЮ, ТЮ","В начале слова Ю обозначает два звука, после согласного смягчает его."],
+ "Ц":["[ц]","цапля, цирк","ЦА, ЦО, ЦЫ","Ц — всегда твёрдый согласный звук."],
+ "Э":["[э]","эхо, этаж","ЭМ, ЭТО","Э — гласный звук."],
+ "Щ":["[щ']","щука, щётка","ЩА, ЩУ, ЩИ","Щ — всегда мягкий согласный звук."],
+ "Ф":["[ф]","флаг, фонарь","ФА, ФО, ФИ","Ф — согласный глухой звук."],
+ "Ъ":["звука не обозначает","подъезд, съел","ПОДЪЕЗД, СЪЁМКА","Твёрдый знак не обозначает звука, а разделяет буквы."]
+ };
+ let done=JSON.parse(localStorage.getItem("nsai-reading-done")||"[]");
+ const $=id=>document.getElementById(id);
+ function save(){localStorage.setItem("nsai-reading-done",JSON.stringify(done));update();}
+ function update(){
+  const p=prep.filter((_,i)=>done.includes("p"+i)).length,l=letters.filter((_,i)=>done.includes("l"+i)).length,total=prep.length+letters.length,n=p+l;
+  $("rProgressText").textContent=n+" из "+total+" уроков пройдено";$("rProgressBar").style.width=(100*n/total)+"%";
+  $("rPrepCount").textContent=p+" / 8";$("rLetterCount").textContent=l+" / 33";
+  document.querySelectorAll(".reading-letter").forEach((b,i)=>b.classList.toggle("done",done.includes("l"+i)));
+  document.querySelectorAll("[data-prep-done]").forEach((b,i)=>{if(done.includes("p"+i))b.textContent="✓ Пройдено";});
+ }
+ function mark(id){if(!done.includes(id)){done.push(id);save();}}
+ function renderPrep(){
+  $("rPrepList").innerHTML=prep.map((d,i)=>`<div class="card"><span class="tag">Тема ${i+1}</span><h3>${d[0]}</h3><button class="secondary" data-open-prep="${i}">Открыть тему →</button><div class="small" data-prep-done="${i}">${done.includes("p"+i)?"✓ Пройдено":""}</div></div>`).join("");
+  $("rPrepList").querySelectorAll("[data-open-prep]").forEach(b=>b.addEventListener("click",()=>openPrep(+b.dataset.openPrep)));
+ }
+ function renderLetters(){
+  $("rLetterGrid").innerHTML=letters.map((l,i)=>`<button class="reading-letter ${done.includes("l"+i)?"done":""}" data-letter="${i}">${l}</button>`).join("");
+  $("rLetterGrid").querySelectorAll("[data-letter]").forEach(b=>b.addEventListener("click",()=>openLetter(+b.dataset.letter)));
+ }
+ function showLesson(html){$("rLesson").hidden=false;$("rLesson").innerHTML=html;$("rLesson").scrollIntoView({behavior:"smooth",block:"start"});}
+ function openPrep(i){
+  const d=prep[i];showLesson(`<span class="tag">Подготовка · тема ${i+1} из 8</span><h2>${d[0]}</h2><p>${d[1]}</p><h3>${d[2]}</h3>${d[3].map((x,j)=>`<button class="reading-option" data-answer="${j}">${x}</button>`).join("")}<div id="rFeedback" class="reading-feedback" hidden></div>`);
+  $("rLesson").querySelectorAll("[data-answer]").forEach(b=>b.addEventListener("click",()=>{let ok=+b.dataset.answer===d[4];$("rFeedback").hidden=false;$("rFeedback").textContent=ok?"Верно! "+d[5]:"Попробуй ещё раз. Вспомни объяснение и выбери другой ответ.";if(ok)mark("p"+i);}));
+ }
+ function openLetter(i){
+  const l=letters[i],d=info[l],sign=l==="Ь"||l==="Ъ";
+  const q=sign?`Что верно про букву ${l}?`:`Какой звук обозначает буква ${l} в простом примере?`;
+  const opts=sign?["Она обозначает гласный звук","Она не обозначает собственного звука","Она всегда читается как [а]"]:[d[0],"[м]","[с]"];
+  const ans=sign?1:0;
+  showLesson(`<span class="tag">Буква ${i+1} из 33 · порядок Горецкого</span><h2>Знакомимся с буквой ${l}</h2><div class="reading-big">${l} ${l.toLowerCase()}</div><p><b>Звук:</b> ${d[0]}</p><p>${d[3]}</p><p><b>Примеры слов:</b> ${d[1]}</p><h3>Читаем слоги и сочетания</h3><div class="notice" style="font-size:23px;text-align:center;font-weight:800">${d[2]}</div><h3>${q}</h3>${opts.map((x,j)=>`<button class="reading-option" data-answer="${j}">${x}</button>`).join("")}<div id="rFeedback" class="reading-feedback" hidden></div><div style="margin-top:12px"><button class="secondary" id="rNext" disabled>${i===32?"К результатам":"Следующая буква →"}</button></div>`);
+  $("rLesson").querySelectorAll("[data-answer]").forEach(b=>b.addEventListener("click",()=>{let ok=+b.dataset.answer===ans;$("rFeedback").hidden=false;$("rFeedback").textContent=ok?"Правильно! Урок отмечен как пройденный.":"Пока не совсем. Перечитай подсказку и попробуй снова.";if(ok){mark("l"+i);$("rNext").disabled=false;}}));
+  $("rNext").addEventListener("click",()=>{if(i<32)openLetter(i+1);else{$("rLesson").innerHTML="<h2>Молодец! Ты дошёл до конца последовательности букв.</h2><p>Повтори трудные темы и продолжай читать слоги и слова.</p>";}});
+ }
+ renderPrep();renderLetters();update();
+})();
+</script>
+
 </body></html>
