@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#071b48">
+<title>NeuroSchool AI — цифровая школа</title>
+<style>
+:root{--bg:#07152f;--panel:#102a60;--panel2:#153875;--blue:#1685f8;--cyan:#65e2f2;--text:#f4f8ff;--muted:#b8c9e9;--line:#31528b;--good:#5ee0ad}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(140deg,#06132d,#0b2860 60%,#073d75);color:var(--text);font:16px system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}
+header{display:flex;align-items:center;justify-content:space-between;padding:16px 22px;border-bottom:1px solid #ffffff20;position:sticky;top:0;background:#071a3bed;backdrop-filter:blur(10px);z-index:3}
+.brand{display:flex;align-items:center;gap:11px;font-weight:800}.logo{width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,#76efff,#1685f8);display:grid;place-items:center;color:#05204d;font-size:23px}
+.small{font-size:12px;color:var(--muted);font-weight:500}.layout{display:grid;grid-template-columns:230px 1fr;gap:18px;max-width:1300px;margin:auto;padding:18px}
+nav{background:#0c2453;border:1px solid var(--line);border-radius:20px;padding:12px;height:max-content;position:sticky;top:85px}
+nav button{width:100%;text-align:left;border:0;background:transparent;color:var(--muted);padding:13px 12px;border-radius:12px;font-size:15px;margin:3px 0;cursor:pointer}
+nav button.active,nav button:hover{background:linear-gradient(90deg,#1475e9,#1a8ff4);color:white}
+main{min-width:0}.view{display:none}.view.active{display:block}
+.hero,.card{background:linear-gradient(135deg,#123d88,#126fbe);border:1px solid #4d83c5;border-radius:20px;padding:22px;margin-bottom:16px;box-shadow:0 12px 30px #0002}
+.card{background:#102b60;border-color:var(--line);box-shadow:none}
+h1{font-size:clamp(25px,4vw,38px);margin:8px 0}h2{font-size:23px;margin:0 0 14px}h3{margin:4px 0 8px}p{color:var(--muted);line-height:1.55}.eyebrow{color:#91eaff;text-transform:uppercase;font-size:12px;font-weight:800;letter-spacing:1px}
+button,.btn{border:0;border-radius:12px;background:#8beafa;color:#05214d;padding:11px 16px;font-weight:800;cursor:pointer;font-size:14px}
+button.secondary{background:#1b4788;color:white;border:1px solid #4772ad}button:disabled{opacity:.5}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
+.stat{font-size:25px;font-weight:800;color:white}.tag{display:inline-block;background:#1a4b86;color:#b9f5ff;padding:5px 9px;border-radius:99px;font-size:12px}
+.subject{display:flex;flex-direction:column;gap:8px}.subject p{margin:0;flex:1}
+input,select,textarea{width:100%;background:#071b40;border:1px solid #45689f;color:white;border-radius:10px;padding:12px;font:inherit;margin:5px 0 13px}
+label{display:block;color:#dceaff;font-size:14px;font-weight:650}.lesson{border-top:1px solid var(--line);padding:14px 0}.lesson:first-child{border:0}
+.notice{padding:12px;border-radius:12px;background:#0a3c4d;color:#b9f5ff;margin:10px 0}
+.progress{height:10px;background:#061a3b;border-radius:20px;overflow:hidden}.progress span{display:block;height:100%;background:linear-gradient(90deg,#63e3ed,#1685f8);width:0}
+footer{text-align:center;color:#8fa9d1;padding:22px;font-size:12px}
+@media(max-width:760px){.layout{grid-template-columns:1fr;padding:10px}nav{position:static;display:grid;grid-template-columns:repeat(3,1fr);gap:3px}nav button{text-align:center;padding:10px 4px;font-size:13px}header{padding:12px}.hero,.card{padding:17px}}
+</style>
+</head>
+<body>
+<header><div class="brand"><div class="logo">N</div><div>NeuroSchool AI<div class="small">Твоя цифровая школа</div></div></div><span class="tag">Демо-версия · 1.1</span></header>
+<div class="layout">
+<nav aria-label="Главное меню">
+<button class="active" data-view="home">⌂ Главная</button>
+<button data-view="subjects">▤ Предметы</button>
+<button data-view="plan">◷ Мой план</button>
+<button data-view="progress">↗ Прогресс</button>
+<button data-view="profile">◎ Профиль</button>
+<button data-view="assistant">✦ ИИ-помощник</button>
+</nav>
+<main>
+<section class="view active" id="home">
+<div class="hero"><div class="eyebrow">Учись в своём темпе</div><h1>Добро пожаловать в NeuroSchool AI</h1><p>Персональная учебная среда: понятные объяснения, практика и разумный режим занятий. Начни с настройки профиля.</p><button data-go="profile">Настроить обучение →</button></div>
+<div class="grid">
+<div class="card"><div class="small">Завершено уроков</div><div class="stat" id="homeLessons">0</div><p>Продолжай в своём темпе</p></div>
+<div class="card"><div class="small">Результат тестов</div><div class="stat" id="homeScore">—</div><p>Средний процент</p></div>
+<div class="card"><div class="small">План на сегодня</div><div class="stat">30 мин</div><p>Начальная рекомендация</p></div>
+</div>
+<div class="card"><h2>Рекомендуем начать</h2><p id="welcomeHint">Сначала настрой профиль, затем выбери предмет и открой первый урок.</p><button class="secondary" data-go="subjects">Перейти к предметам</button></div>
+</section>
+<section class="view" id="subjects">
+<div class="hero"><div class="eyebrow">Учебная библиотека</div><h1>Предметы</h1><p>Выбери предмет, чтобы открыть короткие уроки и проверить знания.</p></div>
+<div class="grid" id="subjectList"></div>
+</section>
+<section class="view" id="plan">
+<div class="hero"><div class="eyebrow">Ритм без перегрузки</div><h1>Мой план</h1><p>Выбери, сколько времени у тебя есть и как ты себя чувствуешь. Это демо-рекомендация, а не медицинская оценка.</p></div>
+<div class="card"><label for="energy">Сколько у тебя сейчас сил?</label><select id="energy"><option value="low">Мало сил</option><option value="mid" selected>Нормально</option><option value="high">Много сил</option></select><label for="minutes">Сколько времени есть?</label><select id="minutes"><option>10</option><option selected>20</option><option>30</option><option>45</option></select><button id="makePlan">Составить план</button><div id="planResult" class="notice">Нажми «Составить план», чтобы получить рекомендацию.</div></div>
+</section>
+<section class="view" id="progress">
+<div class="hero"><div class="eyebrow">Твои достижения</div><h1>Прогресс</h1><p>Здесь отображаются результаты, сохранённые на этом устройстве в этом браузере.</p></div>
+<div class="grid"><div class="card"><div class="small">Уроки завершены</div><div class="stat" id="progressLessons">0</div></div><div class="card"><div class="small">Средний результат</div><div class="stat" id="progressScore">—</div></div></div>
+<div class="card"><h2>История занятий</h2><div id="history">Пока занятий нет. Открой предмет и пройди первый урок.</div></div>
+</section>
+<section class="view" id="profile">
+<div class="hero"><div class="eyebrow">Персональные настройки</div><h1>Профиль ученика</h1><p>Можно использовать вымышленное имя. Не вводи адрес, телефон или другие личные данные.</p></div>
+<div class="card"><label for="nickname">Имя или псевдоним</label><input id="nickname" placeholder="Например, Ученик"><label for="age">Возрастная группа</label><select id="age"><option value="">Выбери возраст</option><option>6–8 лет</option><option>9–11 лет</option><option>12–14 лет</option><option>15–16 лет</option><option>17–18 лет</option></select><label for="curriculum">Учебная программа / страна</label><select id="curriculum"><option>Общая программа</option><option>Германия</option><option>Россия</option><option>Другая программа</option></select><button id="saveProfile">Сохранить профиль</button><div id="profileMessage" class="notice" hidden></div></div>
+</section>
+<section class="view" id="assistant">
+<div class="hero"><div class="eyebrow">Помощь в учёбе</div><h1>ИИ-помощник</h1><p>Пока это демонстрационный помощник с готовыми подсказками, а не подключённая нейросеть.</p></div>
+<div class="card"><label for="question">Что хочешь понять?</label><textarea id="question" rows="3" placeholder="Например: как складывать дроби?"></textarea><button id="ask">Получить подсказку</button><div id="answer" class="notice">Я помогу разбить вопрос на маленькие шаги. Напиши тему и нажми кнопку.</div></div>
+</section>
+<section class="view" id="lessonView">
+<div class="hero"><button class="secondary" id="backSubjects">← К предметам</button><div class="eyebrow" id="lessonSubject"></div><h1 id="lessonTitle">Урок</h1><p id="lessonText"></p></div>
+<div class="card"><h2>Проверь себя</h2><p id="quizQuestion"></p><div id="quizOptions"></div><div id="quizFeedback" class="notice" hidden></div></div>
+</section>
+</main></div><footer>NeuroSchool AI · Учебный прототип 1.1 · Данные хранятся локально в браузере</footer>
+<script>
+(function(){
+const lessons={
+'Математика':[{title:'Сложение',text:'Сложение объединяет количества. Например, 3 + 2 = 5: было три предмета, добавили ещё два, стало пять.',q:'Сколько будет 4 + 3?',a:['6','7','8'],correct:1,why:'Верно! Если к четырём добавить три, получится семь.'},{title:'Умножение',text:'Умножение — это короткая запись повторяющегося сложения. 3 × 2 означает 2 + 2 + 2.',q:'Чему равно 3 × 2?',a:['5','6','8'],correct:1,why:'Правильно: 2 + 2 + 2 = 6.'}],
+'Русский язык':[{title:'Части речи',text:'Существительное называет предмет или явление и отвечает на вопросы «кто?» или «что?».',q:'Какое слово является существительным?',a:['Бежать','Красивый','Книга'],correct:2,why:'Да! «Книга» — существительное.'},{title:'Глагол',text:'Глагол обозначает действие и отвечает на вопросы «что делать?» или «что сделать?».',q:'Найди глагол.',a:['Прыгать','Синий','Стол'],correct:0,why:'Верно: «прыгать» обозначает действие.'}],
+'Естествознание':[{title:'Вода',text:'Вода в природе встречается в жидком, твёрдом и газообразном состояниях: вода, лёд и водяной пар.',q:'Как называется твёрдое состояние воды?',a:['Пар','Лёд','Дождь'],correct:1,why:'Верно! Твёрдое состояние воды — лёд.'}],
+'История':[{title:'Что изучает история',text:'История изучает жизнь людей в прошлом, события, общества и изменения со временем.',q:'Что изучает история?',a:['Только растения','Прошлое людей и обществ','Только числа'],correct:1,why:'Правильно! История помогает узнавать о прошлом.'}],
+'Английский язык':[{title:'Приветствие',text:'Hello означает «привет» или «здравствуйте». Goodbye означает «до свидания».',q:'Как переводится Hello?',a:['Пока','Спасибо','Привет'],correct:2,why:'Отлично! Hello — привет.'}],
+'Логика':[{title:'Найди закономерность',text:'В последовательности 2, 4, 6, 8 каждое следующее число на два больше предыдущего.',q:'Какое число будет следующим: 2, 4, 6, 8, ...?',a:['9','10','12'],correct:1,why:'Верно! Следующее число — 10.'}]
+};
+let data={profile:{},completed:0,scores:[],history:[]};
+try{data=Object.assign(data,JSON.parse(localStorage.getItem('nsai-data')||'{}'));}catch(e){}
+function save(){try{localStorage.setItem('nsai-data',JSON.stringify(data));}catch(e){}}
+function show(id){document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));document.querySelectorAll('nav button[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===id));if(id==='progress'||id==='home')refreshStats();window.scrollTo({top:0,behavior:'smooth'});}
+document.querySelectorAll('nav button[data-view]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.view)));
+document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.go)));
+function refreshStats(){let avg=data.scores.length?Math.round(data.scores.reduce((a,b)=>a+b,0)/data.scores.length)+'%':'—';['homeLessons','progressLessons'].forEach(id=>document.getElementById(id).textContent=data.completed||0);['homeScore','progressScore'].forEach(id=>document.getElementById(id).textContent=avg);document.getElementById('history').innerHTML=data.history.length?data.history.slice().reverse().map(x=>'<div class="lesson"><b>'+escapeHtml(x.title)+'</b><div class="small">'+escapeHtml(x.date)+'</div></div>').join(''):'Пока занятий нет. Открой предмет и пройди первый урок.';}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+const list=document.getElementById('subjectList');
+Object.keys(lessons).forEach((name,i)=>{let d=document.createElement('div');d.className='card subject';d.innerHTML='<span class="tag">Предмет '+(i+1)+'</span><h2>'+name+'</h2><p>'+lessons[name].length+' мини-урок(а) с вопросами для самопроверки.</p><button class="openSubject">Открыть уроки →</button><div class="lessonList" hidden></div>';d.querySelector('button').addEventListener('click',()=>{let box=d.querySelector('.lessonList');box.hidden=!box.hidden;box.innerHTML=lessons[name].map((l,j)=>'<div class="lesson"><b>'+escapeHtml(l.title)+'</b><br><button class="secondary" data-lesson="'+j+'">Начать урок</button></div>').join('');box.querySelectorAll('[data-lesson]').forEach(btn=>btn.addEventListener('click',()=>openLesson(name,Number(btn.dataset.lesson))));});list.appendChild(d);});
+let current=null;
+function openLesson(subject,index){current={subject,index,lesson:lessons[subject][index]};let l=current.lesson;document.getElementById('lessonSubject').textContent=subject;document.getElementById('lessonTitle').textContent=l.title;document.getElementById('lessonText').textContent=l.text;document.getElementById('quizQuestion').textContent=l.q;document.getElementById('quizFeedback').hidden=true;let opts=document.getElementById('quizOptions');opts.innerHTML='';l.a.forEach((a,i)=>{let b=document.createElement('button');b.className='secondary';b.style.margin='4px';b.textContent=a;b.addEventListener('click',()=>answer(i));opts.appendChild(b);});show('lessonView');}
+function answer(i){let l=current.lesson,ok=i===l.correct;let f=document.getElementById('quizFeedback');f.hidden=false;f.textContent=ok?l.why:'Пока не совсем. Попробуй ещё раз или перечитай объяснение.';if(ok){document.querySelectorAll('#quizOptions button').forEach(b=>b.disabled=true);data.completed=(data.completed||0)+1;data.scores.push(100);data.history.push({title:current.subject+' — '+l.title,date:new Date().toLocaleString('ru-RU')});save();refreshStats();}}
+document.getElementById('backSubjects').addEventListener('click',()=>show('subjects'));
+document.getElementById('saveProfile').addEventListener('click',()=>{data.profile={nickname:document.getElementById('nickname').value.trim(),age:document.getElementById('age').value,curriculum:document.getElementById('curriculum').value};save();let m=document.getElementById('profileMessage');m.hidden=false;m.textContent='Профиль сохранён на этом устройстве. Можно перейти к предметам!';});
+document.getElementById('makePlan').addEventListener('click',()=>{let e=document.getElementById('energy').value,m=Number(document.getElementById('minutes').value),study=e==='low'?Math.min(10,m):e==='mid'?Math.min(20,m):Math.min(30,m),rest=Math.max(2,Math.round(study/5));document.getElementById('planResult').textContent='Рекомендация: '+study+' минут учёбы, затем '+rest+' минут отдыха. Выбери один урок и не торопись. Если усталость усиливается — сделай перерыв.';});
+document.getElementById('ask').addEventListener('click',()=>{let q=document.getElementById('question').value.trim(),a=document.getElementById('answer');if(!q){a.textContent='Напиши тему или вопрос, чтобы получить подсказку.';return;}a.textContent='Давай разберём «'+q+'» по шагам: 1) Скажи, что уже понятно. 2) Найди одно ключевое правило или понятие. 3) Разбери простой пример. 4) Попробуй решить похожее задание самостоятельно. Это демонстрационная подсказка, не ответ от подключённой нейросети.';});
+if(data.profile){document.getElementById('nickname').value=data.profile.nickname||'';document.getElementById('age').value=data.profile.age||'';document.getElementById('curriculum').value=data.profile.curriculum||'Общая программа';}
+refreshStats();
+})();
+</script>
+</body></html>
