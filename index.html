@@ -58,7 +58,7 @@ footer{text-align:center;color:#8fa9d1;padding:22px;font-size:12px}
 </style>
 </head>
 <body>
-<header><div class="brand"><div class="logo">N</div><div>NeuroSchool AI<div class="small">Твоя цифровая школа</div></div></div><span class="tag">Демо-версия · 1.1</span></header>
+<header><div class="brand"><div class="logo">N</div><div>NeuroSchool AI<div class="small">Твоя цифровая школа</div></div></div><span class="tag">Демо-версия · 2.2</span></header>
 <div class="layout">
 <nav aria-label="Главное меню">
 <button class="active" data-view="home">⌂ Главная</button>
@@ -251,18 +251,29 @@ refreshStats();
   $("rNext").addEventListener("click",()=>{if(i<32)openLetter(i+1);else{$("rLesson").innerHTML="<h2>Молодец! Ты дошёл до конца последовательности букв.</h2><p>Повтори трудные темы и продолжай читать слоги и слова.</p>";}});
  }
  
-  // Озвучка через встроенный синтез речи браузера/Android.
+  // Мягкая озвучка: предпочитаем женский русский голос, если он установлен на устройстве.
+  function getRussianFemaleVoice(){
+   if(!("speechSynthesis" in window)) return null;
+   const voices=window.speechSynthesis.getVoices();
+   const russian=voices.filter(v=>/^ru([_-]|$)/i.test(v.lang));
+   const femaleHints=/female|woman|жен|алёна|алена|ирина|светлана|милена|оксана|юлия|мария|anna|elena|irina/i;
+   return russian.find(v=>femaleHints.test(v.name)) || russian.find(v=>/google/i.test(v.name)) || russian[0] || null;
+  }
   function speakText(text){
    if(!("speechSynthesis" in window) || !("SpeechSynthesisUtterance" in window)){
     alert("На этом устройстве браузер не поддерживает озвучку. Открой сайт в Chrome и проверь русский голосовой пакет Android.");
     return;
    }
    window.speechSynthesis.cancel();
-   const u=new SpeechSynthesisUtterance(String(text||""));
-   u.lang="ru-RU";u.rate=0.82;u.pitch=1;
-   const ru=window.speechSynthesis.getVoices().find(v=>/^ru(-|_)/i.test(v.lang));
-   if(ru)u.voice=ru;
+   const clean=String(text||"").replace(/\[([А-ЯЁа-яё])\]/g,"звук $1").replace(/\s+/g," ").trim();
+   const u=new SpeechSynthesisUtterance(clean);
+   u.lang="ru-RU";u.rate=0.76;u.pitch=1.12;u.volume=1;
+   const voice=getRussianFemaleVoice();
+   if(voice)u.voice=voice;
    window.speechSynthesis.speak(u);
+  }
+  if("speechSynthesis" in window){
+   window.speechSynthesis.onvoiceschanged=()=>getRussianFemaleVoice();
   }
   function stopSpeech(){if("speechSynthesis" in window)window.speechSynthesis.cancel();}
   $("readingVoiceHelp").addEventListener("click",()=>speakText("Привет! Здесь мы учимся читать постепенно. Сначала послушай объяснение. Потом нажми на кнопку с динамиком возле задания. Выбирай ответ. Если ошибёшься, послушай ещё раз и попробуй снова. Не торопись."));
