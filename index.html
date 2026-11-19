@@ -44,6 +44,17 @@ footer{text-align:center;color:#8fa9d1;padding:22px;font-size:12px}
 .reading-progress span{display:block;height:100%;background:linear-gradient(90deg,#63e3ed,#1685f8);width:0}
 @media(max-width:760px){.reading-letters{grid-template-columns:repeat(5,minmax(0,1fr))}}
 
+
+.voice-tools{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.voice-tools button{min-height:46px}
+.reading-task{background:#0b214b;border:1px solid #31528b;border-radius:14px;padding:14px;margin:12px 0}
+.reading-task h3{margin:0 0 8px}
+.reading-task .reading-option{min-height:48px;font-size:16px}
+.reading-task .reading-option:disabled{opacity:.8}
+.reading-task-count{color:#9fefff;font-weight:800;margin:8px 0}
+.reading-emoji{font-size:34px;text-align:center;margin:8px}
+.voice-hint{font-size:13px;color:#b8c9e9;margin-top:8px}
+
 </style>
 </head>
 <body>
@@ -97,7 +108,13 @@ footer{text-align:center;color:#8fa9d1;padding:22px;font-size:12px}
 <section class="view" id="reading">
  <div class="hero"><div class="eyebrow">Курс чтения · 1 класс</div><h1>Читаем по «Азбуке» Горецкого</h1>
  <p>Сохраняем всю прежнюю NeuroSchool и добавляем отдельный последовательный курс: подготовка к буквам, буквы по порядку, упражнения и проверка.</p>
- <div class="small">Прогресс курса чтения хранится отдельно в браузере на этом устройстве.</div></div>
+ <div class="small">Прогресс курса чтения хранится отдельно в браузере на этом устройстве.</div>
+  <div class="voice-tools">
+   <button type="button" id="readingVoiceHelp">🔊 Как заниматься</button>
+   <button type="button" class="secondary" id="readingVoiceStop">■ Остановить голос</button>
+  </div>
+  <div class="voice-hint">Нажимай на кнопки «Послушать», чтобы услышать объяснение и задание. Если голос не звучит, проверь громкость и русский голосовой пакет в настройках Android.</div>
+  </div>
  <div class="reading-card">
   <h2>Прогресс курса</h2><div id="rProgressText">0 уроков пройдено</div>
   <div class="reading-progress"><span id="rProgressBar"></span></div>
@@ -233,7 +250,111 @@ refreshStats();
   $("rLesson").querySelectorAll("[data-answer]").forEach(b=>b.addEventListener("click",()=>{let ok=+b.dataset.answer===ans;$("rFeedback").hidden=false;$("rFeedback").textContent=ok?"Правильно! Урок отмечен как пройденный.":"Пока не совсем. Перечитай подсказку и попробуй снова.";if(ok){mark("l"+i);$("rNext").disabled=false;}}));
   $("rNext").addEventListener("click",()=>{if(i<32)openLetter(i+1);else{$("rLesson").innerHTML="<h2>Молодец! Ты дошёл до конца последовательности букв.</h2><p>Повтори трудные темы и продолжай читать слоги и слова.</p>";}});
  }
- renderPrep();renderLetters();update();
+ 
+  // Озвучка через встроенный синтез речи браузера/Android.
+  function speakText(text){
+   if(!("speechSynthesis" in window) || !("SpeechSynthesisUtterance" in window)){
+    alert("На этом устройстве браузер не поддерживает озвучку. Открой сайт в Chrome и проверь русский голосовой пакет Android.");
+    return;
+   }
+   window.speechSynthesis.cancel();
+   const u=new SpeechSynthesisUtterance(String(text||""));
+   u.lang="ru-RU";u.rate=0.82;u.pitch=1;
+   const ru=window.speechSynthesis.getVoices().find(v=>/^ru(-|_)/i.test(v.lang));
+   if(ru)u.voice=ru;
+   window.speechSynthesis.speak(u);
+  }
+  function stopSpeech(){if("speechSynthesis" in window)window.speechSynthesis.cancel();}
+  $("readingVoiceHelp").addEventListener("click",()=>speakText("Привет! Здесь мы учимся читать постепенно. Сначала послушай объяснение. Потом нажми на кнопку с динамиком возле задания. Выбирай ответ. Если ошибёшься, послушай ещё раз и попробуй снова. Не торопись."));
+  $("readingVoiceStop").addEventListener("click",stopSpeech);
+
+  const prepExtra=[
+   [["Послушай: букву можно увидеть и написать, а звук — услышать. Что можно услышать?",["Букву","Звук","Картинку"],1,"Звук мы слышим, а букву видим и пишем.","👂"],["Что помогает записать услышанные слова?",["Буквы","Цвета","Цифры"],0,"Слова записывают буквами.","✏️"]],
+   [["Послушай: «Светит солнце». Это законченная мысль?",["Да, это предложение","Нет, это одно слово","Это набор звуков"],0,"Предложение выражает законченную мысль.","☀️"],["Где предложение?",["Весёлый","Птицы поют.","Зелёный"],1,"«Птицы поют» — законченная мысль.","🐦"]],
+   [["Послушай слова: «Кот спит». Сколько здесь слов?",["Одно","Два","Три"],1,"Кот / спит — два слова.","🐈"],["Сколько слов в предложении «Мама дома»?",["Два","Три","Четыре"],0,"Мама / дома — два слова.","🏠"]],
+   [["Послушай слово «ма-ма». Сколько в нём слогов?",["Один","Два","Три"],1,"Ма-ма — два слога.","👏"],["Сколько слогов в слове «мак»?",["Один","Два","Три"],0,"Мак — один слог.","🌺"]],
+   [["В слове «ма́ма» где ударение?",["На первом слоге","На втором слоге","Ударения нет"],0,"Ма́ма — ударение на первом слоге.","🗣️"],["В каком слове ударение на втором слоге?",["Ма́ма","Рука́","О́кна"],1,"Рука́ — ударение на втором слоге.","✋"]],
+   [["Что из этого мы произносим как часть слова?",["Звук [м]","Шум дождя","Звон чашки"],0,"[м] — речевой звук.","👄"],["С какого звука начинается слово «сок»?",["[с]","[л]","[у]"],0,"Слово «сок» начинается со звука [с].","🥤"]],
+   [["Какой звук можно долго тянуть голосом?",["[с]","[а]","[к]"],1,"Гласный [а] можно тянуть голосом.","🎵"],["С какого звука начинается слово «оса»?",["С гласного [о]","С согласного [с]","С согласного [м]"],0,"Слово «оса» начинается с гласного [о].","🐝"]],
+   [["Послушай слог «МУ». Как его нужно произнести?",["М — пауза — У","Слитно: МУ","Только звук У"],1,"Согласный и гласный в слоге-слиянии произносим слитно.","🔡"],["Какой слог произносится слитно?",["С-А отдельно","НО слитно","Н отдельно"],1,"НО — один слог, произносим его слитно.","🗣️"]]
+  ];
+
+  function renderTaskSet(title,intro,tasks,doneId,finishLabel,finishAction){
+   const solved=new Set();
+   const taskHtml=tasks.map((t,i)=>`<div class="reading-task">
+    <div class="tag">Упражнение ${i+1} из ${tasks.length}</div><h3>${t[0]}</h3>
+    <button type="button" class="secondary" data-say-task="${i}">🔊 Послушать задание</button>
+    <div class="reading-emoji">${t[4]||"👂"}</div>
+    ${t[1].map((a,j)=>`<button type="button" class="reading-option" data-task="${i}" data-answer="${j}">${a}</button>`).join("")}
+    <div class="reading-feedback" id="taskFeedback${i}" hidden></div></div>`).join("");
+   showLesson(`<span class="tag">${title}</span><h2>${title}</h2><p>${intro}</p>
+    <div class="voice-tools"><button type="button" class="secondary" id="sayWholeLesson">🔊 Послушать объяснение</button><button type="button" class="secondary" id="stopLessonVoice">■ Стоп</button></div>
+    <div class="reading-task-count" id="taskCount">Выполнено: 0 из ${tasks.length}</div>${taskHtml}
+    <div class="reading-feedback" id="allTasksFeedback" hidden></div>
+    <button type="button" id="finishReadingLesson" disabled>${finishLabel}</button>`);
+   $("sayWholeLesson").addEventListener("click",()=>speakText(intro));
+   $("stopLessonVoice").addEventListener("click",stopSpeech);
+   $("rLesson").querySelectorAll("[data-say-task]").forEach(b=>b.addEventListener("click",()=>{
+    const t=tasks[+b.dataset.sayTask];speakText(t[0]+". Варианты ответа: "+t[1].join(". "));
+   }));
+   $("rLesson").querySelectorAll("[data-task]").forEach(b=>b.addEventListener("click",()=>{
+    const ti=+b.dataset.task,ai=+b.dataset.answer,t=tasks[ti],fb=$("taskFeedback"+ti);
+    if(solved.has(ti))return;
+    if(ai===t[2]){
+     solved.add(ti);$("rLesson").querySelectorAll(`[data-task="${ti}"]`).forEach(x=>x.disabled=true);
+     fb.hidden=false;fb.textContent="Верно! "+t[3];
+     $("taskCount").textContent="Выполнено: "+solved.size+" из "+tasks.length;
+     speakText("Правильно! "+t[3]);
+    }else{fb.hidden=false;fb.textContent="Пока не получилось. Послушай задание ещё раз и попробуй другой ответ.";speakText("Попробуй ещё раз. "+t[0]);}
+    if(solved.size===tasks.length){
+     mark(doneId);$("allTasksFeedback").hidden=false;$("allTasksFeedback").textContent="Все упражнения выполнены! Молодец!";
+     $("finishReadingLesson").disabled=false;speakText("Все упражнения выполнены! Молодец!");
+    }
+   }));
+   $("finishReadingLesson").addEventListener("click",finishAction);
+  }
+
+  function openPrep(i){
+   const d=prep[i],tasks=[[d[2],d[3],d[4],d[5],"🧠"],...prepExtra[i]];
+   renderTaskSet("Подготовка · тема "+(i+1)+" из 8",d[1],tasks,"p"+i,"Следующая тема →",()=>{
+    if(i<prep.length-1)openPrep(i+1);
+    else{$("rLesson").innerHTML="<h2>Подготовка завершена!</h2><p>Теперь можно переходить к буквам.</p><button type='button' id='goLetters'>Перейти к буквам</button>";$("goLetters").addEventListener("click",()=>openLetter(0));}
+   });
+  }
+
+  function openLetter(i){
+   const l=letters[i],d=info[l],sign=l==="Ь"||l==="Ъ",firstWord=d[1].split(",")[0].trim();
+   let tasks;
+   if(sign){
+    tasks=[
+     [`Что верно про букву ${l}?`,["Она обозначает гласный звук","Она не обозначает собственного звука","Она всегда читается как [а]"],1,"Верно. Эта буква сама звука не обозначает.","🔤"],
+     [`В каком слове есть буква ${l}?`,l==="Ь"?["конь","мак","оса"]:["подъезд","кот","мама"],0,"Ты нашёл букву в слове!","🔎"],
+     [`Для чего нужна буква ${l}?`,l==="Ь"?["Помогает показать мягкость согласного","Обозначает звук [а]","Обозначает звук [о]"]:["Разделяет буквы перед Е, Ё, Ю, Я","Обозначает звук [м]","Всегда стоит в начале слова"],0,"Правильно! Вспомни объяснение урока.","🧩"]
+    ];
+   }else{
+    const isVowel=["А","О","И","Ы","У","Е","Я","Ё","Ю","Э"].includes(l);
+    const soundOptions=isVowel?[d[0],"[м]","[с]"]:[d[0],"[а]","[о]"];
+    const distractors=["мама","сок","нос","оса","кот","лук","дом","шар","рыба","арбуз"].filter(w=>!w.toUpperCase().includes(l));
+    const syllable=d[2].split(",")[0].trim();
+    tasks=[
+     [`Какой звук или звуки связаны с буквой ${l}?`,soundOptions,0,d[3],"🔊"],
+     [`В каком слове есть буква ${l}?`,[firstWord,...distractors.slice(0,2)],0,"В слове «"+firstWord+"» есть буква "+l+".","🖼️"],
+     [`Найди пример из урока с буквой ${l}.`,[syllable,"МА","СО"].filter((x,j,a)=>a.indexOf(x)===j).concat(["ЛУ"]).slice(0,3),0,"В этом примере есть изучаемая буква. Послушай и повтори.","🔡"]
+    ];
+   }
+   const intro=`Сегодня знакомимся с буквой ${l}. Звук: ${d[0]}. ${d[3]} Примеры слов: ${d[1]}. Послушай, затем выполни три упражнения.`;
+   renderTaskSet("Буква "+l+" · урок "+(i+1)+" из 33",intro,tasks,"l"+i,i===32?"Завершить курс":"Следующая буква →",()=>{
+    stopSpeech();
+    if(i<32)openLetter(i+1);
+    else{$("rLesson").innerHTML="<h2>Молодец! Ты прошёл все 33 буквы!</h2><p>Можно повторить буквы и подготовительные темы. Читай понемногу, не торопись.</p>";}
+   });
+   const big=document.createElement("div");big.className="reading-big";big.textContent=l+" "+l.toLowerCase();
+   $("rLesson").insertBefore(big,$("rLesson").children[2]);
+   const syll=document.createElement("div");syll.className="notice";syll.style.cssText="font-size:25px;text-align:center;font-weight:800";syll.textContent="Примеры: "+d[2];
+   $("rLesson").insertBefore(syll,$("rLesson").querySelector(".reading-task"));
+  }
+
+  renderPrep();renderLetters();update();
 })();
 </script>
 
