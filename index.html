@@ -58,7 +58,7 @@ footer{text-align:center;color:#8fa9d1;padding:22px;font-size:12px}
 </style>
 </head>
 <body>
-<header><div class="brand"><div class="logo">N</div><div>NeuroSchool AI<div class="small">Твоя цифровая школа</div></div></div><span class="tag">Демо-версия · 2.3</span></header>
+<header><div class="brand"><div class="logo">N</div><div>NeuroSchool AI<div class="small">Твоя цифровая школа</div></div></div><span class="tag">Демо-версия · 2.4</span></header>
 <div class="layout">
 <nav aria-label="Главное меню">
 <button class="active" data-view="home">⌂ Главная</button>
@@ -145,7 +145,7 @@ footer{text-align:center;color:#8fa9d1;padding:22px;font-size:12px}
 
 
 
-</main></div><footer>NeuroSchool AI · Учебный прототип 2.3 · Данные хранятся локально в браузере</footer>
+</main></div><footer>NeuroSchool AI · Учебный прототип 2.4 · Данные хранятся локально в браузере</footer>
 <script>
 (function(){
 const lessons={
@@ -307,38 +307,51 @@ refreshStats();
   ];
 
   function renderTaskSet(title,intro,tasks,doneId,finishLabel,finishAction){
-   const solved=new Set();
-   const taskHtml=tasks.map((t,i)=>`<div class="reading-task">
-    <div class="tag">Упражнение ${i+1} из ${tasks.length}</div><h3>${t[0]}</h3>
-    <button type="button" class="secondary" data-say-task="${i}">🔊 Послушать задание</button>
-    <div class="reading-emoji">${t[4]||"👂"}</div>
-    ${t[1].map((a,j)=>`<button type="button" class="reading-option" data-task="${i}" data-answer="${j}">${a}</button>`).join("")}
-    <div class="reading-feedback" id="taskFeedback${i}" hidden></div></div>`).join("");
-   showLesson(`<span class="tag">${title}</span><h2>${title}</h2><p>${intro}</p>
-    <div class="voice-tools"><button type="button" class="secondary" id="sayWholeLesson">🔊 Послушать объяснение</button><button type="button" class="secondary" id="stopLessonVoice">■ Стоп</button></div>
-    <div class="reading-task-count" id="taskCount">Выполнено: 0 из ${tasks.length}</div>${taskHtml}
-    <div class="reading-feedback" id="allTasksFeedback" hidden></div>
-    <button type="button" id="finishReadingLesson" disabled>${finishLabel}</button>`);
-   $("sayWholeLesson").addEventListener("click",()=>speakText(intro));
-   $("stopLessonVoice").addEventListener("click",stopSpeech);
-   $("rLesson").querySelectorAll("[data-say-task]").forEach(b=>b.addEventListener("click",()=>{
-    const t=tasks[+b.dataset.sayTask];speakText(t[0]+". Варианты ответа: "+t[1].join(". "));
-   }));
-   $("rLesson").querySelectorAll("[data-task]").forEach(b=>b.addEventListener("click",()=>{
-    const ti=+b.dataset.task,ai=+b.dataset.answer,t=tasks[ti],fb=$("taskFeedback"+ti);
-    if(solved.has(ti))return;
-    if(ai===t[2]){
-     solved.add(ti);$("rLesson").querySelectorAll(`[data-task="${ti}"]`).forEach(x=>x.disabled=true);
-     fb.hidden=false;fb.textContent="Верно! "+t[3];
-     $("taskCount").textContent="Выполнено: "+solved.size+" из "+tasks.length;
-     speakText("Правильно! "+t[3]);
-    }else{fb.hidden=false;fb.textContent="Пока не получилось. Послушай задание ещё раз и попробуй другой ответ.";speakText("Попробуй ещё раз. "+t[0]);}
-    if(solved.size===tasks.length){
-     mark(doneId);$("allTasksFeedback").hidden=false;$("allTasksFeedback").textContent="Все упражнения выполнены! Молодец!";
-     $("finishReadingLesson").disabled=false;speakText("Все упражнения выполнены! Молодец!");
-    }
-   }));
-   $("finishReadingLesson").addEventListener("click",finishAction);
+    // Незавершённые упражнения сохраняются; при новом открытии варианты перемешиваются.
+    let savedProgress={};
+    try{savedProgress=JSON.parse(localStorage.getItem("nsai-reading-progress")||"{}");}catch(e){}
+    const solved=new Set(Array.isArray(savedProgress[doneId])?savedProgress[doneId]:[]);
+    const shuffledTasks=tasks.map(t=>{
+      const pairs=t[1].map((label,index)=>({label,correct:index===t[2]}));
+      for(let n=pairs.length-1;n>0;n--){const j=Math.floor(Math.random()*(n+1));[pairs[n],pairs[j]]=[pairs[j],pairs[n]];}
+      return [t[0],pairs.map(x=>x.label),pairs.findIndex(x=>x.correct),t[3],t[4]];
+    });
+    const taskHtml=shuffledTasks.map((t,i)=>`<div class="reading-task">
+     <div class="tag">Упражнение ${i+1} из ${shuffledTasks.length}</div><h3>${t[0]}</h3>
+     <button type="button" class="secondary" data-say-task="${i}">🔊 Послушать задание</button>
+     <div class="reading-emoji">${t[4]||"👂"}</div>
+     ${t[1].map((a,j)=>`<button type="button" class="reading-option" data-task="${i}" data-answer="${j}" ${solved.has(i)?"disabled":""}>${a}</button>`).join("")}
+     <div class="reading-feedback" id="taskFeedback${i}" ${solved.has(i)?"":"hidden"}>${solved.has(i)?"✓ Уже выполнено":""}</div></div>`).join("");
+    showLesson(`<span class="tag">${title}</span><h2>${title}</h2><p>${intro}</p>
+     <div class="notice">⏱️ План на 15 минут: 2 минуты — рассмотри букву и произнеси звук; 3 минуты — найди букву в словах; 4 минуты — прочитай примеры вслух; 3 минуты — выполни упражнения; 3 минуты — повтори букву и слова. Не спеши: делай небольшие паузы между заданиями.</div>
+     <div class="voice-tools"><button type="button" class="secondary" id="sayWholeLesson">🔊 Послушать объяснение</button><button type="button" class="secondary" id="stopLessonVoice">■ Стоп</button></div>
+     <div class="reading-task-count" id="taskCount">Выполнено: ${solved.size} из ${shuffledTasks.length}</div>${taskHtml}
+     <div class="reading-feedback" id="allTasksFeedback" ${solved.size===shuffledTasks.length?"":"hidden"}>${solved.size===shuffledTasks.length?"Все упражнения выполнены! Молодец!":""}</div>
+     <button type="button" id="finishReadingLesson" ${solved.size===shuffledTasks.length?"":"disabled"}>${finishLabel}</button>`);
+    $("sayWholeLesson").addEventListener("click",()=>speakText(intro));
+    $("stopLessonVoice").addEventListener("click",stopSpeech);
+    $("rLesson").querySelectorAll("[data-say-task]").forEach(b=>b.addEventListener("click",()=>{
+      const t=shuffledTasks[+b.dataset.sayTask];speakText(t[0]+". Варианты ответа: "+t[1].join(". "));
+    }));
+    $("rLesson").querySelectorAll("[data-task]").forEach(b=>b.addEventListener("click",()=>{
+      const ti=+b.dataset.task,ai=+b.dataset.answer,t=shuffledTasks[ti],fb=$("taskFeedback"+ti);
+      if(solved.has(ti))return;
+      if(ai===t[2]){
+        solved.add(ti);$("rLesson").querySelectorAll(`[data-task="${ti}"]`).forEach(x=>x.disabled=true);
+        fb.hidden=false;fb.textContent="Верно! "+t[3];
+        $("taskCount").textContent="Выполнено: "+solved.size+" из "+shuffledTasks.length;
+        savedProgress[doneId]=Array.from(solved);
+        try{localStorage.setItem("nsai-reading-progress",JSON.stringify(savedProgress));}catch(e){}
+        speakText("Правильно! "+t[3]);
+      }else{fb.hidden=false;fb.textContent="Пока не получилось. Послушай задание ещё раз и попробуй другой ответ.";speakText("Попробуй ещё раз. "+t[0]);}
+      if(solved.size===shuffledTasks.length){
+        mark(doneId);delete savedProgress[doneId];
+        try{localStorage.setItem("nsai-reading-progress",JSON.stringify(savedProgress));}catch(e){}
+        $("allTasksFeedback").hidden=false;$("allTasksFeedback").textContent="Все упражнения выполнены! Молодец!";
+        $("finishReadingLesson").disabled=false;speakText("Все упражнения выполнены! Молодец!");
+      }
+    }));
+    $("finishReadingLesson").addEventListener("click",finishAction);
   }
 
   function openPrep(i){
@@ -357,14 +370,24 @@ refreshStats();
     const day1Done=done.includes("l"+i+"d1")||done.includes("l"+i)||done.includes("l"+i+"d2");
 
     if(day===1){
+      const otherWords=["мама","сок","нос","оса","кот","лук","дом","шар","рама","мак","сани","лиса","река","дым","жук","вата","часы","ёж"];
+      const wordWithLetter=d[1].split(",").map(x=>x.trim()).find(w=>w.toUpperCase().includes(l))||firstWord;
+      const distractorWords=otherWords.filter(w=>!w.toUpperCase().includes(l));
+      const soundOptions=sign?["не обозначает собственного звука","[а]","[м]"]:vowels?[d[0],"[м]","[с]"]:[d[0],"[а]","[о]"];
       const tasks=sign?[
-        [`Что верно про букву ${l}?`,["Она обозначает гласный звук","Она не обозначает собственного звука","Она всегда читается как [а]"],1,"Верно! Эта буква сама звука не обозначает.","🔤"],
-        [`В каком слове есть буква ${l}?`,l==="Ь"?["конь","мак","оса"]:["подъезд","кот","мама"],0,"Ты нашёл букву в слове!","🔎"],
-        [`Для чего нужна буква ${l}?`,l==="Ь"?["Показывает мягкость согласного","Обозначает звук [а]","Обозначает звук [о]"]:["Разделяет части слова перед Е, Ё, Ю, Я","Обозначает звук [м]","Всегда стоит в начале слова"],0,"Правильно!","🧩"]
+        [`Рассмотри знак ${l}. Что верно?`,["Это гласная буква","Она не обозначает собственного звука","Это цифра"],1,"Верно! Эта буква сама звука не обозначает.","🔤"],
+        [`Найди слово, в котором пишется ${l}.`,[wordWithLetter,...distractorWords.slice(0,2)],0,"Ты внимательно рассмотрел слово и нашёл нужную букву!","🔎"],
+        [`Какую работу выполняет ${l}?`,l==="Ь"?["Показывает мягкость согласного","Обозначает звук [а]","Ставит ударение"]:["Разделяет части слова перед Е, Ё, Ю, Я","Обозначает звук [м]","Заменяет гласную"],0,"Правильно! Вспомни эту особенность при чтении.","🧩"],
+        [`Посмотри на слово «${wordWithLetter}». Где здесь знак ${l}?`,["В слове он есть","Его в слове нет","Он стоит первым"],0,"Отлично! Найди знак глазами и покажи его.","👀"],
+        [`Выбери верное описание буквы ${l}.`,["У неё есть собственный гласный звук","Она помогает читать слово, но своего звука не обозначает","Она всегда читается как [о]"],1,"Верно! Это особая буква.","💡"],
+        [`Прочитай слово «${wordWithLetter}» медленно. Что важно заметить?`,l==="Ь"?["Мягкий знак может показывать мягкость согласного","Мягкий знак читается как [а]","Мягкий знак всегда первый"]:["Твёрдый знак разделяет части слова перед Е, Ё, Ю, Я","Твёрдый знак обозначает [й]","Твёрдый знак заменяет пробел"],0,"Ты хорошо поработал со словом!","📖"]
       ]:[
-        [`Как выглядит буква ${l}?`,[l+" "+l.toLowerCase(),"А а","М м"].filter((x,j,a)=>a.indexOf(x)===j),0,"Это заглавная и строчная буква "+l+".","🔤"],
-        [`Какой звук или звуки связаны с буквой ${l}?`,vowels?[d[0],"[м]","[с]"]:[d[0],"[а]","[о]"],0,d[3],"🔊"],
-        [`В каком слове есть буква ${l}?`,[firstWord,...["мама","сок","нос","оса","кот","лук","дом","шар"].filter(w=>!w.toUpperCase().includes(l)).slice(0,2)],0,"В слове «"+firstWord+"» есть буква "+l+".","🖼️"]
+        [`Найди заглавную и строчную буквы ${l}.`,[l+" "+l.toLowerCase(),"А а","М м"],0,"Это заглавная и строчная буква "+l+".","🔤"],
+        [`Какой звук или звуки связаны с буквой ${l}?`,soundOptions,0,d[3],"🔊"],
+        [`Найди слово, в котором есть буква ${l}.`,[wordWithLetter,...distractorWords.slice(0,2)],0,"В слове «"+wordWithLetter+"» есть буква "+l+".","🔎"],
+        [`Послушай или произнеси ${d[0]}. Что ты произносишь?`,[vowels?"Гласный звук":"Согласный звук","Шум природы","Название числа"],0,vowels?"Верно! Гласный звук можно тянуть голосом.":"Верно! Это согласный звук.","👄"],
+        [`Выбери слово, которое начинается с буквы ${l}.`,[d[1].split(",").map(x=>x.trim()).find(w=>w.toUpperCase().startsWith(l))||wordWithLetter,...distractorWords.slice(2,4)],0,"Правильно! Произнеси первый звук в этом слове.","🚀"],
+        [`Найди букву ${l} среди других букв.`,[l+" · А · М","А · О · У","М · С · К"],0,"Отлично! Ты научился быстро узнавать букву "+l+".","🎯"]
       ];
       const intro=`Первый день. Знакомимся с буквой ${l}. Посмотри на её заглавный и строчный варианты. ${d[3]} Примеры слов: ${d[1]}. Сегодня учимся узнавать букву и находить её в словах.`;
       renderTaskSet("Буква "+l+" · день 1 из 2",intro,tasks,"l"+i+"d1","Перейти ко второму дню →",()=>{
