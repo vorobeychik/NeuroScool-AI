@@ -54,11 +54,17 @@ footer{text-align:center;color:#8fa9d1;padding:22px;font-size:12px}
 .reading-task-count{color:#9fefff;font-weight:800;margin:8px 0}
 .reading-emoji{font-size:34px;text-align:center;margin:8px}
 .voice-hint{font-size:13px;color:#b8c9e9;margin-top:8px}
+.fun-mission{display:flex;align-items:center;gap:12px;padding:14px;margin:12px 0;border:1px solid #6b8fd0;border-radius:16px;background:linear-gradient(110deg,#173f79,#4b347f);line-height:1.45;color:#f4f8ff}
+.fun-mascot{font-size:42px;flex:0 0 auto;animation:funBob 2s ease-in-out infinite}
+.fun-score{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-weight:800;color:#ffe88a;margin:12px 0 4px}
+.fun-progress{height:13px;border:1px solid #4772ad}
+.fun-bonus{padding:13px;margin:14px 0;border-radius:14px;background:#243c69;color:#e8f2ff;line-height:1.5}
+@keyframes funBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
 
 </style>
 </head>
 <body>
-<header><div class="brand"><div class="logo">N</div><div>NeuroSchool AI<div class="small">Твоя цифровая школа</div></div></div><span class="tag">Демо-версия · 2.4</span></header>
+<header><div class="brand"><div class="logo">N</div><div>NeuroSchool AI<div class="small">Твоя цифровая школа</div></div></div><span class="tag">Демо-версия · 2.5</span></header>
 <div class="layout">
 <nav aria-label="Главное меню">
 <button class="active" data-view="home">⌂ Главная</button>
@@ -325,7 +331,11 @@ refreshStats();
     showLesson(`<span class="tag">${title}</span><h2>${title}</h2><p>${intro}</p>
      <div class="notice">⏱️ План на 15 минут: 2 минуты — рассмотри букву и произнеси звук; 3 минуты — найди букву в словах; 4 минуты — прочитай примеры вслух; 3 минуты — выполни упражнения; 3 минуты — повтори букву и слова. Не спеши: делай небольшие паузы между заданиями.</div>
      <div class="voice-tools"><button type="button" class="secondary" id="sayWholeLesson">🔊 Послушать объяснение</button><button type="button" class="secondary" id="stopLessonVoice">■ Стоп</button></div>
+     <div class="fun-mission"><div class="fun-mascot">🦊</div><div><strong>Игровая миссия: ${title.includes("Подготовка")?"Помоги лисёнку собрать коллекцию знаний":"Стань супергероем буквы"}!</strong><div>За каждый правильный ответ получай звезду ⭐ Ошибаться не страшно — можно пробовать снова.</div></div></div>
+     <div class="fun-score"><span id="starCount">⭐ ${solved.size} звёзд</span><span id="funRank">${solved.size>=shuffledTasks.length?"🏆 Миссия пройдена!":solved.size>=3?"🚀 Отличный темп!":"🎮 Начинаем игру!"}</span></div>
+     <div class="reading-progress fun-progress"><span id="funProgressBar" style="width:${Math.round(solved.size/shuffledTasks.length*100)}%"></span></div>
      <div class="reading-task-count" id="taskCount">Выполнено: ${solved.size} из ${shuffledTasks.length}</div>${taskHtml}
+     <div class="fun-bonus">🎤 <strong>Бонусный раунд:</strong> после заданий произнеси вслух самое интересное слово из урока и придумай с ним смешное предложение. За это можно подарить себе ещё одну звезду!</div>
      <div class="reading-feedback" id="allTasksFeedback" ${solved.size===shuffledTasks.length?"":"hidden"}>${solved.size===shuffledTasks.length?"Все упражнения выполнены! Молодец!":""}</div>
      <button type="button" id="finishReadingLesson" ${solved.size===shuffledTasks.length?"":"disabled"}>${finishLabel}</button>`);
     $("sayWholeLesson").addEventListener("click",()=>speakText(intro));
@@ -340,6 +350,9 @@ refreshStats();
         solved.add(ti);$("rLesson").querySelectorAll(`[data-task="${ti}"]`).forEach(x=>x.disabled=true);
         fb.hidden=false;fb.textContent="Верно! "+t[3];
         $("taskCount").textContent="Выполнено: "+solved.size+" из "+shuffledTasks.length;
+        $("starCount").textContent="⭐ "+solved.size+" звёзд";
+        $("funRank").textContent=solved.size===shuffledTasks.length?"🏆 Миссия пройдена!":solved.size>=3?"🚀 Отличный темп!":"🎮 Так держать!";
+        $("funProgressBar").style.width=Math.round(solved.size/shuffledTasks.length*100)+"%";
         savedProgress[doneId]=Array.from(solved);
         try{localStorage.setItem("nsai-reading-progress",JSON.stringify(savedProgress));}catch(e){}
         speakText("Правильно! "+t[3]);
