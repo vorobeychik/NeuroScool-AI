@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#071b48">
-<title>NeuroSchool AI — цифровая школа</title>
+<title>NeuroSchool AI — цифровая школа · 2.7</title>
 <style>
 :root{--bg:#07152f;--panel:#102a60;--panel2:#153875;--blue:#1685f8;--cyan:#65e2f2;--text:#f4f8ff;--muted:#b8c9e9;--line:#31528b;--good:#5ee0ad}
 *{box-sizing:border-box}body{margin:0;background:linear-gradient(140deg,#06132d,#0b2860 60%,#073d75);color:var(--text);font:16px system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}
@@ -64,12 +64,12 @@ footer{text-align:center;color:#8fa9d1;padding:22px;font-size:12px}
 
 /* Adventure game mode */
 .adventure-hub{background:radial-gradient(circle at 85% 15%,#8a5cf4 0,#263f91 34%,#102b60 75%);border:2px solid #8b9eff;border-radius:22px;padding:20px;margin:14px 0;overflow:hidden;position:relative}
-.adventure-hub h2{font-size:25px}.adventure-hero{display:flex;gap:14px;align-items:center}.adventure-avatar{font-size:58px;filter:drop-shadow(0 5px 5px #0005);animation:funBob 2s infinite}.adventure-map{display:grid;grid-template-columns:repeat(auto-fit,minmax(115px,1fr));gap:10px;margin:14px 0}.adventure-node{min-height:94px;background:linear-gradient(145deg,#234e91,#372c78);border:1px solid #83a7ff;color:white;border-radius:16px;padding:10px;text-align:center}.adventure-node span{display:block;font-size:25px;margin-bottom:5px}.adventure-node:disabled{opacity:.4;filter:grayscale(1)}.adventure-node.done{background:linear-gradient(145deg,#12634e,#167c72);border-color:#6be7bd}.adventure-stats{display:flex;gap:9px;flex-wrap:wrap;margin:12px 0}.adventure-stat{background:#071b40;border:1px solid #5579b8;border-radius:12px;padding:9px 12px;font-weight:800;color:#ffe88a}.adventure-dialog{background:#071b40;border:1px solid #5579b8;padding:12px;border-radius:14px;color:#eaf3ff;margin:12px 0}
+.adventure-hub h2{font-size:25px}.adventure-hero{display:flex;gap:14px;align-items:center}.adventure-avatar{font-size:58px;filter:drop-shadow(0 5px 5px #0005);animation:funBob 2s infinite}.adventure-map{display:flex;flex-flow:row nowrap;align-items:center;gap:18px;margin:18px 0 12px;padding:42px 22px 30px;width:100%;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-color:#8beafa #102b60;scrollbar-width:thin;background:radial-gradient(ellipse at 15% 50%,#235c83 0,#153c70 42%,#102b60 100%);border:1px solid #4772ad;border-radius:18px;position:relative;isolation:isolate}.adventure-map:before{content:"";position:absolute;z-index:-1;left:0;right:0;top:50%;height:12px;transform:translateY(-50%);background:repeating-linear-gradient(90deg,#e7d18a 0 22px,#9c8553 22px 32px);opacity:.85;box-shadow:0 0 12px #f6d77b}.adventure-node{flex:0 0 142px;min-height:112px;scroll-snap-align:center;background:linear-gradient(145deg,#234e91,#372c78);border:2px solid #83a7ff;color:white;border-radius:18px;padding:12px 8px;text-align:center;box-shadow:0 7px 0 #071b40,0 10px 18px #0005;position:relative;z-index:1;transition:transform .18s}.adventure-node:not(:disabled):active{transform:translateY(4px);box-shadow:0 3px 0 #071b40}.adventure-node span{display:block;font-size:30px;margin-bottom:7px}.adventure-node:disabled{opacity:.4;filter:grayscale(1)}.adventure-node.done{background:linear-gradient(145deg,#12634e,#167c72);border-color:#6be7bd}.adventure-stats{display:flex;gap:9px;flex-wrap:wrap;margin:12px 0}.adventure-stat{background:#071b40;border:1px solid #5579b8;border-radius:12px;padding:9px 12px;font-weight:800;color:#ffe88a}.adventure-dialog{background:#071b40;border:1px solid #5579b8;padding:12px;border-radius:14px;color:#eaf3ff;margin:12px 0}
 
 </style>
 </head>
 <body>
-<header><div class="brand"><div class="logo">N</div><div>NeuroSchool AI<div class="small">Твоя цифровая школа</div></div></div><span class="tag">Демо-версия · 2.6</span></header>
+<header><div class="brand"><div class="logo">N</div><div>NeuroSchool AI<div class="small">Твоя цифровая школа</div></div></div><span class="tag">Демо-версия · 2.7</span></header>
 <div class="layout">
 <nav aria-label="Главное меню">
 <button class="active" data-view="home">⌂ Главная</button>
@@ -114,7 +114,7 @@ footer{text-align:center;color:#8fa9d1;padding:22px;font-size:12px}
   <div class="adventure-stats"><div class="adventure-stat" id="adventureStars">⭐ 0 звёзд</div><div class="adventure-stat" id="adventureLevels">🏅 0 уровней</div><div class="adventure-stat">❤️ Ошибаться можно — пробуй снова</div></div>
   <div class="adventure-dialog">🎯 <b>Твоя задача:</b> проходи подготовительные испытания, затем освобождай буквы по порядку. За каждое выполненное упражнение получаешь звезду!</div>
  </div>
- <div class="reading-card" id="adventureMapCard" hidden><button type="button" class="secondary" id="backAdventure">← Назад к курсу</button><h2>🗺️ Карта приключения</h2><p>Сначала пройди подготовку, затем открывай буквы по одной. Зелёные места уже пройдены.</p><div id="adventureMap" class="adventure-map"></div></div>
+ <div class="reading-card" id="adventureMapCard" hidden><button type="button" class="secondary" id="backAdventure">← Назад к курсу</button><h2>🗺️ Большая карта приключения</h2><p>Карта расположена горизонтально. Листай её влево и вправо, чтобы путешествовать от леса знаний к замкам букв. Нажми на открытое место, чтобы начать уровень.</p><div id="adventureMap" class="adventure-map" aria-label="Горизонтальная карта уровней"></div><div class="small">👆 На планшете и телефоне карту можно прокручивать пальцем в стороны.</div></div>
  <div class="reading-card">
   <h2>Прогресс курса</h2><div id="rProgressText">0 уроков пройдено</div>
   <div class="reading-progress"><span id="rProgressBar"></span></div>
