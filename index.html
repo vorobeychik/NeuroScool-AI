@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#071b48">
-<title>NeuroSchool AI — цифровая школа · 2.7</title>
+<title>NeuroSchool AI — цифровая школа · 2.10</title>
 <style>
 :root{--bg:#07152f;--panel:#102a60;--panel2:#153875;--blue:#1685f8;--cyan:#65e2f2;--text:#f4f8ff;--muted:#b8c9e9;--line:#31528b;--good:#5ee0ad}
 *{box-sizing:border-box}body{margin:0;background:linear-gradient(140deg,#06132d,#0b2860 60%,#073d75);color:var(--text);font:16px system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}
@@ -135,10 +135,49 @@ footer{text-align:center;color:#8fa9d1;padding:22px;font-size:12px}
  .adventure-map-card:after{content:"↔ Для полного обзора карты поверни планшет или телефон горизонтально";display:block;text-align:center;color:#9df5ff;font-size:12px;padding:4px 0 8px}
 }
 
+
+/* NeuroSchool 2.9: playful learning-game challenges */
+.adventure-node b{font-size:12px;line-height:1.25}
+.game-task{background:linear-gradient(145deg,#102e67,#28215e 58%,#42236d);border:2px solid #638cff;box-shadow:0 8px 0 #09183c,0 0 22px #477bff44;border-radius:20px;padding:16px}
+.game-task-top{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.game-task-top h3{margin:5px 0;font-size:18px}
+.game-task-top small{color:#c5dcff}
+.game-mode-icon{display:grid;place-items:center;flex:0 0 54px;height:54px;border-radius:16px;background:#ffffff18;border:1px solid #a6d8ff;font-size:30px;box-shadow:0 0 18px #5ceaff55}
+.game-answer-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+.game-answer{display:flex!important;align-items:center;gap:9px;justify-content:flex-start;text-align:left!important;min-height:64px!important;border:2px solid #6b9fff!important;border-radius:15px!important;background:linear-gradient(145deg,#244f9c,#392d82)!important;color:#fff!important;box-shadow:0 4px 0 #101d4a!important;padding:10px!important;font-weight:800}
+.game-answer .answer-gem{font-size:22px;flex:0 0 auto}
+.game-answer:not(:disabled):hover{transform:translateY(-2px);filter:brightness(1.2);box-shadow:0 0 15px #67eaff88!important}
+.game-answer:disabled{opacity:.78}
+.game-gates{border-color:#bd85ff}.game-gates .game-mode-icon{border-color:#e3b7ff;box-shadow:0 0 18px #c879ff66}
+.game-stars{border-color:#ffd66e}.game-stars .game-mode-icon{border-color:#ffe69a;box-shadow:0 0 18px #ffcf4d66}
+.game-speed{border-color:#62e9db}.game-speed .game-mode-icon{border-color:#a2fff5;box-shadow:0 0 18px #52ffe566}
+@media(max-width:520px){.game-answer-grid{grid-template-columns:1fr}.game-task-top h3{font-size:16px}}
+
+/* 2.10: immersive map and one-task-at-a-time game screens */
+#adventureMapCard:not([hidden]){position:fixed;inset:0;z-index:10000;width:100vw;height:100vh;height:100dvh;max-width:none;margin:0;border:0;border-radius:0;padding:clamp(12px,2.5vw,30px);display:flex;flex-direction:column;overflow:hidden;background:#07122f}
+#adventureMapCard:not([hidden])>h2{font-size:clamp(24px,3vw,38px);margin:10px 0}
+#adventureMapCard:not([hidden])>p{max-width:950px;margin:0 0 8px}
+#adventureMapCard:not([hidden]) .adventure-map{flex:1;min-height:0;height:auto;width:100%;margin:8px 0 12px;border-radius:20px}
+#adventureMapCard:not([hidden]) .small{padding-bottom:env(safe-area-inset-bottom)}
+#rLesson.immersive-lesson:not([hidden]){position:fixed;inset:0;z-index:9990;width:100vw;height:100vh;height:100dvh;max-width:none;margin:0;border:0;border-radius:0;padding:clamp(16px,4vw,42px);overflow-y:auto;background:radial-gradient(circle at 80% 0,#263c86,#08142f 62%);display:flex;flex-direction:column;justify-content:flex-start}
+#rLesson.immersive-lesson .immersive-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;max-width:980px;width:100%;margin:0 auto 12px}
+#rLesson.immersive-lesson .immersive-content{width:100%;max-width:980px;margin:0 auto}
+#rLesson.immersive-lesson .reading-task{min-height:min(58vh,560px);display:flex;flex-direction:column;justify-content:center;padding:clamp(18px,4vw,38px);margin:14px 0;background:linear-gradient(145deg,#102e67,#28215e 58%,#42236d)}
+#rLesson.immersive-lesson .reading-task[hidden]{display:none}
+#rLesson.immersive-lesson .game-task-top h3{font-size:clamp(21px,3vw,32px);line-height:1.25}
+#rLesson.immersive-lesson .reading-emoji{font-size:clamp(42px,7vw,72px);margin:16px}
+#rLesson.immersive-lesson .game-answer{min-height:clamp(66px,11vh,100px)!important;font-size:clamp(17px,2.2vw,23px)!important}
+#rLesson.immersive-lesson .reading-task-count,#rLesson.immersive-lesson .fun-score{font-size:18px}
+#rLesson.immersive-lesson .immersive-intro{max-width:980px;width:100%;margin:0 auto}
+#rLesson.immersive-lesson .immersive-finish{max-width:980px;width:100%;margin:12px auto 0}
+#rLesson.immersive-lesson .immersive-finish button{font-size:18px;padding:16px 24px}
+#rLesson.immersive-lesson .game-answer-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(max-width:600px){#rLesson.immersive-lesson .game-answer-grid{grid-template-columns:1fr}#rLesson.immersive-lesson .reading-task{min-height:unset}}
+
 </style>
 </head>
 <body>
-<header><div class="brand"><div class="logo">N</div><div>NeuroSchool AI<div class="small">Твоя цифровая школа</div></div></div><span class="tag">Демо-версия · 2.7</span></header>
+<header><div class="brand"><div class="logo">N</div><div>NeuroSchool AI<div class="small">Твоя цифровая школа</div></div></div><span class="tag">Демо-версия · 2.10</span></header>
 <div class="layout">
 <nav aria-label="Главное меню">
 <button class="active" data-view="home">⌂ Главная</button>
@@ -339,15 +378,15 @@ refreshStats();
  function renderAdventureMap(){
    const map=$("adventureMap");if(!map)return;
    let html='';
-   prep.forEach((d,i)=>{const isDone=done.includes("p"+i),open=i===0||done.includes("p"+(i-1));html+=`<button type="button" class="adventure-node ${isDone?'done':''}" data-game-prep="${i}" ${open?'':'disabled'}><span>${isDone?'🏆':'🌲'}</span><b>Лес знаний</b><br><small>Испытание ${i+1}</small></button>`;});
-   letters.forEach((l,i)=>{const isDone=done.includes("l"+i)||done.includes("l"+i+"d2"),open=i===0||done.includes("l"+(i-1))||done.includes("l"+(i-1)+"d2");html+=`<button type="button" class="adventure-node ${isDone?'done':''}" data-game-letter="${i}" ${open?'':'disabled'}><span>${isDone?'✨':'🔒'}</span><b>Замок ${l}</b><br><small>Буква ${i+1} из 33</small></button>`;});
+   prep.forEach((d,i)=>{const isDone=done.includes("p"+i),open=i===0||done.includes("p"+(i-1));html+=`<button type="button" class="adventure-node ${isDone?'done':''}" data-game-prep="${i}" ${open?'':'disabled'}><span>${isDone?'🏆':'🌲'}</span><b>Разминка</b><br><small>Испытание ${i+1} из 8</small></button>`;});
+   letters.forEach((l,i)=>{const isDone=done.includes("l"+i)||done.includes("l"+i+"d2"),open=i===0||done.includes("l"+(i-1))||done.includes("l"+(i-1)+"d2");html+=`<button type="button" class="adventure-node ${isDone?'done':''}" data-game-letter="${i}" ${open?'':'disabled'}><span>${isDone?'✨':'🔒'}</span><b>Испытание с буквой ${l}</b><br><small>Уровень ${i+1} из 33</small></button>`;});
    map.innerHTML=html;
-   map.querySelectorAll('[data-game-prep]').forEach(b=>b.addEventListener('click',()=>openPrep(+b.dataset.gamePrep)));
-   map.querySelectorAll('[data-game-letter]').forEach(b=>b.addEventListener('click',()=>openLetter(+b.dataset.gameLetter,1)));
+   map.querySelectorAll('[data-game-prep]').forEach(b=>b.addEventListener('click',()=>{$("adventureMapCard").hidden=true;document.body.classList.remove("map-open");openPrep(+b.dataset.gamePrep);}));
+   map.querySelectorAll('[data-game-letter]').forEach(b=>b.addEventListener('click',()=>{$("adventureMapCard").hidden=true;document.body.classList.remove("map-open");openLetter(+b.dataset.gameLetter,1);}));
    refreshAdventureStats();
  }
- $("startAdventure").addEventListener("click",()=>{$("adventureMapCard").hidden=false;renderAdventureMap();$("adventureMapCard").scrollIntoView({behavior:"smooth",block:"start"});});
- $("backAdventure").addEventListener("click",()=>{$("adventureMapCard").hidden=true;$("adventureHub").scrollIntoView({behavior:"smooth",block:"start"});});
+ $("startAdventure").addEventListener("click",()=>{$("adventureMapCard").hidden=false;document.body.classList.add("map-open");renderAdventureMap();});
+ $("backAdventure").addEventListener("click",()=>{$("adventureMapCard").hidden=true;document.body.classList.remove("map-open");$("adventureHub").scrollIntoView({behavior:"smooth",block:"start"});});
 
  function renderPrep(){
   $("rPrepList").innerHTML=prep.map((d,i)=>`<div class="card"><span class="tag">Тема ${i+1}</span><h3>${d[0]}</h3><button class="secondary" data-open-prep="${i}">Открыть тему →</button><div class="small" data-prep-done="${i}">${done.includes("p"+i)?"✓ Пройдено":""}</div></div>`).join("");
@@ -412,7 +451,6 @@ refreshStats();
   ];
 
   function renderTaskSet(title,intro,tasks,doneId,finishLabel,finishAction){
-    // Незавершённые упражнения сохраняются; при новом открытии варианты перемешиваются.
     let savedProgress={};
     try{savedProgress=JSON.parse(localStorage.getItem("nsai-reading-progress")||"{}");}catch(e){}
     const solved=new Set(Array.isArray(savedProgress[doneId])?savedProgress[doneId]:[]);
@@ -421,22 +459,33 @@ refreshStats();
       for(let n=pairs.length-1;n>0;n--){const j=Math.floor(Math.random()*(n+1));[pairs[n],pairs[j]]=[pairs[j],pairs[n]];}
       return [t[0],pairs.map(x=>x.label),pairs.findIndex(x=>x.correct),t[3],t[4]];
     });
-    const taskHtml=shuffledTasks.map((t,i)=>`<div class="reading-task">
-     <div class="tag">Упражнение ${i+1} из ${shuffledTasks.length}</div><h3>${t[0]}</h3>
+    const gameModes=[
+      {name:"Найди правильный ответ",icon:"🕵️",hint:"Осмотрись и выбери нужную карточку",cls:"game-find"},
+      {name:"Открой волшебные ворота",icon:"🚪",hint:"Только одни ворота ведут к звезде",cls:"game-gates"},
+      {name:"Собери звёзды знаний",icon:"⭐",hint:"Выбери верную подсказку",cls:"game-stars"},
+      {name:"Быстрый раунд",icon:"⚡",hint:"Подумай и нажми на ответ",cls:"game-speed"}
+    ];
+    const firstUnsolved=shuffledTasks.findIndex((_,i)=>!solved.has(i));
+    const taskHtml=shuffledTasks.map((t,i)=>{const mode=gameModes[i%gameModes.length];return `<div class="reading-task game-task ${mode.cls}" data-task-panel="${i}" ${solved.has(i)||i!==firstUnsolved?'hidden':''}>
+     <div class="game-task-top"><span class="game-mode-icon">${mode.icon}</span><div><div class="tag">${mode.name} · раунд ${i+1} из ${shuffledTasks.length}</div><h3>${t[0]}</h3><small>${mode.hint}</small></div></div>
      <button type="button" class="secondary" data-say-task="${i}">🔊 Послушать задание</button>
      <div class="reading-emoji">${t[4]||"👂"}</div>
-     ${t[1].map((a,j)=>`<button type="button" class="reading-option" data-task="${i}" data-answer="${j}" ${solved.has(i)?"disabled":""}>${a}</button>`).join("")}
-     <div class="reading-feedback" id="taskFeedback${i}" ${solved.has(i)?"":"hidden"}>${solved.has(i)?"✓ Уже выполнено":""}</div></div>`).join("");
-    showLesson(`<span class="tag">${title}</span><h2>${title}</h2><p>${intro}</p>
-     <div class="notice">⏱️ План на 15 минут: 2 минуты — рассмотри букву и произнеси звук; 3 минуты — найди букву в словах; 4 минуты — прочитай примеры вслух; 3 минуты — выполни упражнения; 3 минуты — повтори букву и слова. Не спеши: делай небольшие паузы между заданиями.</div>
+     <div class="game-answer-grid">${t[1].map((a,j)=>`<button type="button" class="reading-option game-answer" data-task="${i}" data-answer="${j}"><span class="answer-gem">${["💎","🌟","🪄","🚀"][j%4]}</span>${a}</button>`).join("")}</div>
+     <div class="reading-feedback" id="taskFeedback${i}" hidden></div></div>`;}).join("");
+    showLesson(`<div class="immersive-top"><span class="tag">🎮 Игровое испытание</span><button type="button" class="secondary" id="closeImmersiveLesson">↙ Вернуться к курсу</button></div>
+     <div class="immersive-content"><div class="immersive-intro"><span class="tag">${title}</span><h2>${title}</h2><p>${intro}</p>
+     <div class="notice">⏱️ Не торопись. Слушай задание, выбирай ответ и переходи к следующему испытанию.</div>
      <div class="voice-tools"><button type="button" class="secondary" id="sayWholeLesson">🔊 Послушать объяснение</button><button type="button" class="secondary" id="stopLessonVoice">■ Стоп</button></div>
      <div class="fun-mission"><div class="fun-mascot">🦊</div><div><strong>Игровая миссия: ${title.includes("Подготовка")?"Помоги лисёнку собрать коллекцию знаний":"Стань супергероем буквы"}!</strong><div>За каждый правильный ответ получай звезду ⭐ Ошибаться не страшно — можно пробовать снова.</div></div></div>
      <div class="fun-score"><span id="starCount">⭐ ${solved.size} звёзд</span><span id="funRank">${solved.size>=shuffledTasks.length?"🏆 Миссия пройдена!":solved.size>=3?"🚀 Отличный темп!":"🎮 Начинаем игру!"}</span></div>
      <div class="reading-progress fun-progress"><span id="funProgressBar" style="width:${Math.round(solved.size/shuffledTasks.length*100)}%"></span></div>
-     <div class="reading-task-count" id="taskCount">Выполнено: ${solved.size} из ${shuffledTasks.length}</div>${taskHtml}
-     <div class="fun-bonus">🎤 <strong>Бонусный раунд:</strong> после заданий произнеси вслух самое интересное слово из урока и придумай с ним смешное предложение. За это можно подарить себе ещё одну звезду!</div>
-     <div class="reading-feedback" id="allTasksFeedback" ${solved.size===shuffledTasks.length?"":"hidden"}>${solved.size===shuffledTasks.length?"Все упражнения выполнены! Молодец!":""}</div>
-     <button type="button" id="finishReadingLesson" ${solved.size===shuffledTasks.length?"":"disabled"}>${finishLabel}</button>`);
+     <div class="reading-task-count" id="taskCount">Выполнено: ${solved.size} из ${shuffledTasks.length}</div></div>
+     ${taskHtml}
+     <div class="immersive-finish"><div class="fun-bonus">🎤 <strong>Бонусный раунд:</strong> произнеси вслух самое интересное слово из урока и придумай с ним смешное предложение.</div>
+     <div class="reading-feedback" id="allTasksFeedback" ${solved.size===shuffledTasks.length?"":"hidden"}>Все упражнения выполнены! Молодец!</div>
+     <button type="button" id="finishReadingLesson" ${solved.size===shuffledTasks.length?"":"disabled"}>${finishLabel}</button></div></div>`);
+    $("rLesson").classList.add("immersive-lesson");
+    $("closeImmersiveLesson").addEventListener("click",()=>{$("rLesson").classList.remove("immersive-lesson");stopSpeech();});
     $("sayWholeLesson").addEventListener("click",()=>speakText(intro));
     $("stopLessonVoice").addEventListener("click",stopSpeech);
     $("rLesson").querySelectorAll("[data-say-task]").forEach(b=>b.addEventListener("click",()=>{
@@ -452,9 +501,10 @@ refreshStats();
         $("starCount").textContent="⭐ "+solved.size+" звёзд";
         $("funRank").textContent=solved.size===shuffledTasks.length?"🏆 Миссия пройдена!":solved.size>=3?"🚀 Отличный темп!":"🎮 Так держать!";
         $("funProgressBar").style.width=Math.round(solved.size/shuffledTasks.length*100)+"%";
-        savedProgress[doneId]=Array.from(solved);
-        try{localStorage.setItem("nsai-reading-progress",JSON.stringify(savedProgress));}catch(e){}
+        savedProgress[doneId]=Array.from(solved);try{localStorage.setItem("nsai-reading-progress",JSON.stringify(savedProgress));}catch(e){}
         speakText("Правильно! "+t[3]);
+        const nextIndex=shuffledTasks.findIndex((_,idx)=>!solved.has(idx));
+        if(nextIndex!==-1){const next=document.createElement("button");next.type="button";next.className="next-game-task";next.textContent="Следующее задание →";fb.appendChild(document.createElement("br"));fb.appendChild(next);next.addEventListener("click",()=>{$("rLesson").querySelectorAll("[data-task-panel]").forEach(panel=>panel.hidden=true);$("rLesson").querySelector(`[data-task-panel="${nextIndex}"]`).hidden=false;$("rLesson").querySelector(`[data-task-panel="${nextIndex}"]`).scrollIntoView({behavior:"smooth",block:"center"});});}
       }else{fb.hidden=false;fb.textContent="Пока не получилось. Послушай задание ещё раз и попробуй другой ответ.";speakText("Попробуй ещё раз. "+t[0]);}
       if(solved.size===shuffledTasks.length){
         mark(doneId);delete savedProgress[doneId];refreshAdventureStats();if($("adventureMapCard")&&!$("adventureMapCard").hidden)renderAdventureMap();
@@ -537,6 +587,28 @@ refreshStats();
           [`Прочитай ещё один слог: ${syl2}.`,[syl2,syl2.split("").join("-"),"О"+l],0,"Здорово! Прочитай слог ещё раз плавно.","📖"]
         ];
       }
+      // Второй день всегда содержит шесть игровых заданий.
+      const extraDistractors=["мама","сок","нос","оса","кот","лук","дом","шар"].filter(w=>!w.toUpperCase().includes(l));
+      const extraWord=d[1].split(",").map(w=>w.trim()).find(w=>w.toUpperCase().includes(l))||firstWord;
+      if(sign){
+        tasks.push(
+          [`Выбери слово, в котором есть знак ${l}.`,[extraWord,...extraDistractors.slice(0,2)],0,"Верно! Внимательно рассмотри слово и найди особый знак.","🔍"],
+          [`Обозначает ли ${l} отдельный звук?`,["Да, обозначает гласный звук","Нет, собственного звука не обозначает","Обозначает звук [а]"],1,"Правильно! Этот знак не обозначает собственного звука.","💡"],
+          [`Что поможет правильно прочитать слово с ${l}?`,[l==="Ь"?"Учесть мягкость согласного":"Сделать разделение перед Е, Ё, Ю, Я","Прочитать знак как [о]","Пропустить всё слово"],0,"Отлично! Вспомни правило и прочитай слово целиком.","📚"]
+        );
+      }else if(vowels){
+        tasks.push(
+          [d[1].split(",").map(w=>w.trim()).some(w=>w.toUpperCase().startsWith(l))?`Выбери слово, которое начинается с буквы ${l}.`:`Выбери слово, в котором есть буква ${l}.`,[d[1].split(",").map(w=>w.trim()).find(w=>w.toUpperCase().startsWith(l))||extraWord,...extraDistractors.slice(0,2)],0,"Хорошо! Прочитай слово и найди в нём нужную букву.","🚀"],
+          [`Как можно произнести звук ${d[0]}?`,["Плавно тянуть голосом","Только шёпотом без голоса","Это шум, а не звук речи"],0,"Верно! Гласный звук можно тянуть голосом.","🎵"],
+          [`Найди сочетание с буквой ${l}.`,[syllables[0]||l, "МА", "СУ"],0,"Здорово! Прочитай сочетание вслух.","🔡"]
+        );
+      }else{
+        tasks.push(
+          [`Найди слово, в котором есть буква ${l}.`,[extraWord,...extraDistractors.slice(0,2)],0,"Верно! Ты нашёл букву в слове.","🔎"],
+          [`Какой это звук — ${d[0]}?`,["Согласный звук","Гласный звук","Шум природы"],0,"Правильно! Произнеси звук ещё раз.","👄"],
+          [`Прочитай слог ${syllables[syllables.length-1]||l+"А"} слитно. Что важно сделать?`,["Соединить звуки без паузы","Назвать буквы по отдельности","Пропустить гласную"],0,"Отлично! Читай слог плавно, без паузы.","📖"]
+        );
+      }
       const intro=sign
         ?`Второй день. Закрепляем букву ${l} в словах. Прочитай примеры: ${d[1]}.`
         :vowels
@@ -547,7 +619,14 @@ refreshStats();
         if(!done.includes("l"+i))done.push("l"+i);
         save();stopSpeech();
         if(i<32)openLetter(i+1,1);
-        else{$("rLesson").innerHTML="<h2>Молодец! Ты прошёл все 33 буквы!</h2><p>Теперь можно повторять буквы, читать слоги и тренироваться на словах. Не торопись!</p>";}
+        else{
+          $("rLesson").classList.add("immersive-lesson");
+          const sentences=["Мама мыла раму.","У Лены мак.","У кота усы.","Саша пил сок.","У Миши шар."];
+          $("rLesson").innerHTML=`<div class="immersive-top"><span class="tag">🏆 Финал курса чтения</span><button type="button" class="secondary" id="closeFinalReading">↙ К курсу</button></div><div class="immersive-content"><div class="fun-mission"><div class="fun-mascot">🦊</div><div><strong>Ты прошёл все 33 буквы!</strong><div>Теперь прочитай несколько коротких предложений. Читай спокойно, по словам, а потом попробуй прочитать всё предложение целиком.</div></div></div><h2>📖 Большое чтение</h2>${sentences.map((line,n)=>`<div class="reading-task"><div class="tag">Предложение ${n+1} из ${sentences.length}</div><div style="font-size:clamp(24px,4vw,38px);font-weight:850;text-align:center;padding:18px 4px">${line}</div><button type="button" class="secondary" data-read-line="${n}">🔊 Послушать</button></div>`).join("")}<div class="reading-feedback">🌟 Отличная работа! Ты закончил курс знакомства с буквами и сделал первые шаги в чтении.</div><button type="button" id="finishFullCourse">Завершить курс 🎉</button></div>`;
+          $("closeFinalReading").addEventListener("click",()=>{$("rLesson").classList.remove("immersive-lesson");});
+          $("rLesson").querySelectorAll("[data-read-line]").forEach(b=>b.addEventListener("click",()=>speakText(sentences[+b.dataset.readLine])));
+          $("finishFullCourse").addEventListener("click",()=>{$("rLesson").classList.remove("immersive-lesson");$("rLesson").innerHTML="<h2>🏆 Курс завершён!</h2><p>Ты познакомился со всеми буквами и прочитал первые предложения. Возвращайся к карте, чтобы повторять и тренироваться.</p>";});
+        }
       });
     }
     const tabs=document.createElement("div");
