@@ -207,6 +207,17 @@ footer{text-align:center;color:#8fa9d1;padding:22px;font-size:12px}
 <section class="view" id="subjects">
 <div class="hero"><div class="eyebrow">Учебная библиотека</div><h1>Предметы</h1><p>Выбери предмет, чтобы открыть короткие уроки и проверить знания.</p></div>
 <div class="grid" id="subjectList"></div>
+<div class="reading-card" style="margin-top:16px">
+ <span class="tag">Предмет · 1 класс</span>
+ <h2>📚 Обучение чтению</h2>
+ <p>Подготовка, изучение букв за два учебных дня, чтение слогов и первых слов.</p>
+ <button type="button" id="openReadingCourse">Открыть курс чтения →</button>
+</div>
+
+<div class="math-card" id="mathCourseCard">
+ <div class="math-hub"><div class="math-mascot">🧮</div><div style="flex:1;min-width:220px"><span class="tag">ПРЕДМЕТ · 1 КЛАСС</span><h2>🌟 Математические приключения</h2><p>Считай, сравнивай, складывай и решай задачки! Проходи игровые испытания, собирай звёзды и открывай новые уровни.</p><button type="button" class="math-btn" id="openMathMap">🗺️ Открыть карту математики</button></div></div>
+ <div class="small math-topics-note" id="mathCourseStatus">10 игровых миров · 2 дня в каждом мире · 6 заданий в каждом дне</div>
+</div>
 <div class="math-map-overlay" id="mathMapOverlay" hidden>
  <div class="math-map-top"><button type="button" class="math-secondary" id="mathMapBack">← К предметам</button><div><b>🧮 МИР МАТЕМАТИКИ</b><div class="small" id="mathMapStats">0 испытаний пройдено</div></div></div>
  <h1 style="text-align:center">Карта математических приключений</h1><p style="text-align:center">Открывай миры по порядку. В каждом мире два дня, а в каждом дне — шесть заданий.</p>
@@ -303,20 +314,7 @@ document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=
 function refreshStats(){let avg=data.scores.length?Math.round(data.scores.reduce((a,b)=>a+b,0)/data.scores.length)+'%':'—';['homeLessons','progressLessons'].forEach(id=>document.getElementById(id).textContent=data.completed||0);['homeScore','progressScore'].forEach(id=>document.getElementById(id).textContent=avg);document.getElementById('history').innerHTML=data.history.length?data.history.slice().reverse().map(x=>'<div class="lesson"><b>'+escapeHtml(x.title)+'</b><div class="small">'+escapeHtml(x.date)+'</div></div>').join(''):'Пока занятий нет. Открой предмет и пройди первый урок.';}
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 const list=document.getElementById('subjectList');
-function addSubjectCard(title,tag,description,buttonText,buttonId,emoji){
- let d=document.createElement('div');d.className='card subject';
- d.innerHTML='<span class="tag">'+tag+'</span><h2>'+emoji+' '+title+'</h2><p>'+description+'</p><button type="button" class="openSubject" id="'+buttonId+'">'+buttonText+'</button>';
- list.appendChild(d);return d;
-}
-Object.keys(lessons).forEach((name,i)=>{
- if(name==='Математика'){
-  addSubjectCard('Математика','Предмет · 1 класс','Игровой курс: 10 миров, 20 учебных дней и 120 заданий. Счёт, сравнение, сложение, вычитание и задачи.','🗺️ Открыть карту математики','openMathMap','🧮');
-  return;
- }
- let d=document.createElement('div');d.className='card subject';d.innerHTML='<span class="tag">Предмет '+(i+1)+'</span><h2>'+name+'</h2><p>'+lessons[name].length+' мини-урок(а) с вопросами для самопроверки.</p><button class="openSubject">Открыть уроки →</button><div class="lessonList" hidden></div>';
- d.querySelector('button').addEventListener('click',()=>{let box=d.querySelector('.lessonList');box.hidden=!box.hidden;box.innerHTML=lessons[name].map((l,j)=>'<div class="lesson"><b>'+escapeHtml(l.title)+'</b><br><button class="secondary" data-lesson="'+j+'">Начать урок</button></div>').join('');box.querySelectorAll('[data-lesson]').forEach(btn=>btn.addEventListener('click',()=>openLesson(name,Number(btn.dataset.lesson))));});list.appendChild(d);
-});
-addSubjectCard('Обучение чтению','Предмет · 1 класс','Подготовка, 33 буквы, два игровых дня на каждую букву, чтение слогов, слов и предложений.','📚 Открыть курс чтения','openReadingCourse','🔤');
+Object.keys(lessons).forEach((name,i)=>{let d=document.createElement('div');d.className='card subject';d.innerHTML='<span class="tag">Предмет '+(i+1)+'</span><h2>'+name+'</h2><p>'+lessons[name].length+' мини-урок(а) с вопросами для самопроверки.</p><button class="openSubject">Открыть уроки →</button><div class="lessonList" hidden></div>';d.querySelector('button').addEventListener('click',()=>{let box=d.querySelector('.lessonList');box.hidden=!box.hidden;box.innerHTML=lessons[name].map((l,j)=>'<div class="lesson"><b>'+escapeHtml(l.title)+'</b><br><button class="secondary" data-lesson="'+j+'">Начать урок</button></div>').join('');box.querySelectorAll('[data-lesson]').forEach(btn=>btn.addEventListener('click',()=>openLesson(name,Number(btn.dataset.lesson))));});list.appendChild(d);});
 let current=null;
 function openLesson(subject,index){current={subject,index,lesson:lessons[subject][index]};let l=current.lesson;document.getElementById('lessonSubject').textContent=subject;document.getElementById('lessonTitle').textContent=l.title;document.getElementById('lessonText').textContent=l.text;document.getElementById('quizQuestion').textContent=l.q;document.getElementById('quizFeedback').hidden=true;let opts=document.getElementById('quizOptions');opts.innerHTML='';l.a.forEach((a,i)=>{let b=document.createElement('button');b.className='secondary';b.style.margin='4px';b.textContent=a;b.addEventListener('click',()=>answer(i));opts.appendChild(b);});show('lessonView');}
 function answer(i){let l=current.lesson,ok=i===l.correct;let f=document.getElementById('quizFeedback');f.hidden=false;f.textContent=ok?l.why:'Пока не совсем. Попробуй ещё раз или перечитай объяснение.';if(ok){document.querySelectorAll('#quizOptions button').forEach(b=>b.disabled=true);data.completed=(data.completed||0)+1;data.scores.push(100);data.history.push({title:current.subject+' — '+l.title,date:new Date().toLocaleString('ru-RU')});save();refreshStats();}}
