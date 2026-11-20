@@ -61,10 +61,15 @@ footer{text-align:center;color:#8fa9d1;padding:22px;font-size:12px}
 .fun-bonus{padding:13px;margin:14px 0;border-radius:14px;background:#243c69;color:#e8f2ff;line-height:1.5}
 @keyframes funBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
 
+
+/* Adventure game mode */
+.adventure-hub{background:radial-gradient(circle at 85% 15%,#8a5cf4 0,#263f91 34%,#102b60 75%);border:2px solid #8b9eff;border-radius:22px;padding:20px;margin:14px 0;overflow:hidden;position:relative}
+.adventure-hub h2{font-size:25px}.adventure-hero{display:flex;gap:14px;align-items:center}.adventure-avatar{font-size:58px;filter:drop-shadow(0 5px 5px #0005);animation:funBob 2s infinite}.adventure-map{display:grid;grid-template-columns:repeat(auto-fit,minmax(115px,1fr));gap:10px;margin:14px 0}.adventure-node{min-height:94px;background:linear-gradient(145deg,#234e91,#372c78);border:1px solid #83a7ff;color:white;border-radius:16px;padding:10px;text-align:center}.adventure-node span{display:block;font-size:25px;margin-bottom:5px}.adventure-node:disabled{opacity:.4;filter:grayscale(1)}.adventure-node.done{background:linear-gradient(145deg,#12634e,#167c72);border-color:#6be7bd}.adventure-stats{display:flex;gap:9px;flex-wrap:wrap;margin:12px 0}.adventure-stat{background:#071b40;border:1px solid #5579b8;border-radius:12px;padding:9px 12px;font-weight:800;color:#ffe88a}.adventure-dialog{background:#071b40;border:1px solid #5579b8;padding:12px;border-radius:14px;color:#eaf3ff;margin:12px 0}
+
 </style>
 </head>
 <body>
-<header><div class="brand"><div class="logo">N</div><div>NeuroSchool AI<div class="small">Твоя цифровая школа</div></div></div><span class="tag">Демо-версия · 2.5</span></header>
+<header><div class="brand"><div class="logo">N</div><div>NeuroSchool AI<div class="small">Твоя цифровая школа</div></div></div><span class="tag">Демо-версия · 2.6</span></header>
 <div class="layout">
 <nav aria-label="Главное меню">
 <button class="active" data-view="home">⌂ Главная</button>
@@ -104,6 +109,12 @@ footer{text-align:center;color:#8fa9d1;padding:22px;font-size:12px}
   </div>
   <div class="voice-hint">Нажимай на кнопки «Послушать», чтобы услышать объяснение и задание. Если голос не звучит, проверь громкость и доступность русского голоса в настройках iPhone.</div>
   </div>
+ <div class="adventure-hub" id="adventureHub">
+  <div class="adventure-hero"><div class="adventure-avatar">🦊</div><div><span class="tag">НОВЫЙ РЕЖИМ · ПРИКЛЮЧЕНИЕ</span><h2>Долина потерянных букв</h2><p style="color:#e0eaff;margin:4px 0 10px">Помоги лисёнку вернуть буквы в волшебную книгу! Проходи уровни, собирай звёзды и открывай новые места.</p><button type="button" id="startAdventure">🗺️ Открыть карту приключения</button></div></div>
+  <div class="adventure-stats"><div class="adventure-stat" id="adventureStars">⭐ 0 звёзд</div><div class="adventure-stat" id="adventureLevels">🏅 0 уровней</div><div class="adventure-stat">❤️ Ошибаться можно — пробуй снова</div></div>
+  <div class="adventure-dialog">🎯 <b>Твоя задача:</b> проходи подготовительные испытания, затем освобождай буквы по порядку. За каждое выполненное упражнение получаешь звезду!</div>
+ </div>
+ <div class="reading-card" id="adventureMapCard" hidden><button type="button" class="secondary" id="backAdventure">← Назад к курсу</button><h2>🗺️ Карта приключения</h2><p>Сначала пройди подготовку, затем открывай буквы по одной. Зелёные места уже пройдены.</p><div id="adventureMap" class="adventure-map"></div></div>
  <div class="reading-card">
   <h2>Прогресс курса</h2><div id="rProgressText">0 уроков пройдено</div>
   <div class="reading-progress"><span id="rProgressBar"></span></div>
@@ -249,7 +260,26 @@ refreshStats();
   });
   document.querySelectorAll("[data-prep-done]").forEach((b,i)=>{if(done.includes("p"+i))b.textContent="✓ Пройдено";});
  }
- function mark(id){if(!done.includes(id)){done.push(id);save();}}
+ function mark(id){if(!done.includes(id)){done.push(id);save();}if(typeof refreshAdventureStats==="function")refreshAdventureStats();}
+ function refreshAdventureStats(){
+   const allDone=done.filter(x=>/^p\d+$/.test(x)||/^l\d+(d1|d2)?$/.test(x));
+   let stars=0;try{const pr=JSON.parse(localStorage.getItem("nsai-reading-progress")||"{}");Object.values(pr).forEach(a=>{if(Array.isArray(a))stars+=a.length;});}catch(e){}
+   $("adventureStars").textContent="⭐ "+(allDone.length*3+stars)+" звёзд";
+   $("adventureLevels").textContent="🏅 "+allDone.length+" уровней";
+ }
+ function renderAdventureMap(){
+   const map=$("adventureMap");if(!map)return;
+   let html='';
+   prep.forEach((d,i)=>{const isDone=done.includes("p"+i),open=i===0||done.includes("p"+(i-1));html+=`<button type="button" class="adventure-node ${isDone?'done':''}" data-game-prep="${i}" ${open?'':'disabled'}><span>${isDone?'🏆':'🌲'}</span><b>Лес знаний</b><br><small>Испытание ${i+1}</small></button>`;});
+   letters.forEach((l,i)=>{const isDone=done.includes("l"+i)||done.includes("l"+i+"d2"),open=i===0||done.includes("l"+(i-1))||done.includes("l"+(i-1)+"d2");html+=`<button type="button" class="adventure-node ${isDone?'done':''}" data-game-letter="${i}" ${open?'':'disabled'}><span>${isDone?'✨':'🔒'}</span><b>Замок ${l}</b><br><small>Буква ${i+1} из 33</small></button>`;});
+   map.innerHTML=html;
+   map.querySelectorAll('[data-game-prep]').forEach(b=>b.addEventListener('click',()=>openPrep(+b.dataset.gamePrep)));
+   map.querySelectorAll('[data-game-letter]').forEach(b=>b.addEventListener('click',()=>openLetter(+b.dataset.gameLetter,1)));
+   refreshAdventureStats();
+ }
+ $("startAdventure").addEventListener("click",()=>{$("adventureMapCard").hidden=false;renderAdventureMap();$("adventureMapCard").scrollIntoView({behavior:"smooth",block:"start"});});
+ $("backAdventure").addEventListener("click",()=>{$("adventureMapCard").hidden=true;$("adventureHub").scrollIntoView({behavior:"smooth",block:"start"});});
+
  function renderPrep(){
   $("rPrepList").innerHTML=prep.map((d,i)=>`<div class="card"><span class="tag">Тема ${i+1}</span><h3>${d[0]}</h3><button class="secondary" data-open-prep="${i}">Открыть тему →</button><div class="small" data-prep-done="${i}">${done.includes("p"+i)?"✓ Пройдено":""}</div></div>`).join("");
   $("rPrepList").querySelectorAll("[data-open-prep]").forEach(b=>b.addEventListener("click",()=>openPrep(+b.dataset.openPrep)));
@@ -358,7 +388,7 @@ refreshStats();
         speakText("Правильно! "+t[3]);
       }else{fb.hidden=false;fb.textContent="Пока не получилось. Послушай задание ещё раз и попробуй другой ответ.";speakText("Попробуй ещё раз. "+t[0]);}
       if(solved.size===shuffledTasks.length){
-        mark(doneId);delete savedProgress[doneId];
+        mark(doneId);delete savedProgress[doneId];refreshAdventureStats();if($("adventureMapCard")&&!$("adventureMapCard").hidden)renderAdventureMap();
         try{localStorage.setItem("nsai-reading-progress",JSON.stringify(savedProgress));}catch(e){}
         $("allTasksFeedback").hidden=false;$("allTasksFeedback").textContent="Все упражнения выполнены! Молодец!";
         $("finishReadingLesson").disabled=false;speakText("Все упражнения выполнены! Молодец!");
@@ -467,7 +497,7 @@ refreshStats();
     $("readingCourse").hidden=true;
     $("readingCourse").scrollIntoView({behavior:"smooth",block:"start"});
    });
-   renderPrep();renderLetters();update();
+   renderPrep();renderLetters();update();refreshAdventureStats();
 })();
 </script>
 
